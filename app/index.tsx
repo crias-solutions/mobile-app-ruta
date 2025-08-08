@@ -1,63 +1,25 @@
-import { Text, View, Image, SafeAreaView } from 'react-native';
+
+import { useEffect } from 'react';
 import { router } from 'expo-router';
-import { useState, useEffect } from 'react';
-import Button from '../components/Button';
-import { commonStyles, buttonStyles } from '../styles/commonStyles';
+import { View, ActivityIndicator } from 'react-native';
+import { commonStyles } from '../styles/commonStyles';
+import { useConsent } from '../hooks/useConsent';
 
-// Declare the window properties we're using
-declare global {
-  interface Window {
-    handleInstallClick: () => void;
-    canInstall: boolean;
-  }
-}
-
-export default function MainScreen() {
-  const [canInstall, setCanInstall] = useState(false);
+export default function Main() {
+  const { accepted, loading } = useConsent();
 
   useEffect(() => {
-    // Initial check
-    setCanInstall(false);
-
-    // Set up polling interval
-    const intervalId = setInterval(() => {
-      if(window.canInstall) {
-        setCanInstall(true);
-        clearInterval(intervalId);
-      }
-    }, 500);
-
-    // Cleanup
-    return () => {
-      clearInterval(intervalId);
-    };
-  }, []);
+    if (loading) return;
+    if (!accepted) {
+      router.replace('/terms');
+    } else {
+      router.replace('/vehicle');
+    }
+  }, [accepted, loading]);
 
   return (
-    <View style={commonStyles.container}>
-      <View style={commonStyles.content}>
-        <Image
-          source={require('../assets/images/final_quest_240x240.png')}
-          style={{ width: 180, height: 180 }}
-          resizeMode="contain"
-        />
-        <Text style={commonStyles.title}>This is a placeholder app.</Text>
-        <Text style={commonStyles.text}>Your app will be displayed here when it's ready.</Text>
-        <View style={commonStyles.buttonContainer}>
-          {canInstall && (
-            <Button
-              text="Install App"
-              onPress={() => {
-                if(window.handleInstallClick) {
-                  window.handleInstallClick();
-                  setCanInstall(false); // Update state after installation
-                }
-              }}
-              style={buttonStyles.instructionsButton}
-            />
-          )}
-        </View>
-      </View>
+    <View style={[commonStyles.container, { justifyContent: 'center', alignItems: 'center' }]}>
+      <ActivityIndicator color={'#64B5F6'} />
     </View>
   );
 }
