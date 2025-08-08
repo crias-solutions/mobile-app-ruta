@@ -1,5 +1,6 @@
 
 import 'react-native-gesture-handler';
+import { GestureHandlerRootView } from 'react-native-gesture-handler';
 import { Stack, useGlobalSearchParams } from 'expo-router';
 import { StatusBar } from 'expo-status-bar';
 import { SafeAreaProvider, useSafeAreaInsets } from 'react-native-safe-area-context';
@@ -11,7 +12,7 @@ import { useFonts, Inter_400Regular, Inter_600SemiBold, Inter_700Bold } from '@e
 
 const STORAGE_KEY = 'emulated_device';
 
-export default function RootLayout() {
+function RootLayoutInner() {
   const actualInsets = useSafeAreaInsets();
   const { emulate } = useGlobalSearchParams<{ emulate?: string }>();
   const [storedEmulate, setStoredEmulate] = useState<string | null>(null);
@@ -53,30 +54,36 @@ export default function RootLayout() {
 
   if (!fontsLoaded) {
     return (
-      <SafeAreaProvider>
-        <SafeAreaView style={[commonStyles.wrapper, { justifyContent: 'center', alignItems: 'center' }]}>
-          <Text style={{ color: colors.text }}>Loading…</Text>
-        </SafeAreaView>
-      </SafeAreaProvider>
+      <SafeAreaView style={[commonStyles.wrapper, { justifyContent: 'center', alignItems: 'center' }]}>
+        <Text style={{ color: colors.text }}>Loading…</Text>
+      </SafeAreaView>
     );
   }
 
   return (
-    <SafeAreaProvider>
-      <SafeAreaView
-        style={[
-          commonStyles.wrapper,
-          {
-            paddingTop: insetsToUse.top,
-            paddingBottom: insetsToUse.bottom,
-            paddingLeft: insetsToUse.left,
-            paddingRight: insetsToUse.right,
-          },
-        ]}
-      >
-        <StatusBar style="light" />
-        <Stack screenOptions={{ headerShown: false, animation: 'default' }} />
-      </SafeAreaView>
-    </SafeAreaProvider>
+    <SafeAreaView
+      style={[
+        commonStyles.wrapper,
+        {
+          paddingTop: insetsToUse.top,
+          paddingBottom: insetsToUse.bottom,
+          paddingLeft: insetsToUse.left,
+          paddingRight: insetsToUse.right,
+        },
+      ]}
+    >
+      <StatusBar style="light" />
+      <Stack screenOptions={{ headerShown: false, animation: 'default' }} />
+    </SafeAreaView>
+  );
+}
+
+export default function RootLayout() {
+  return (
+    <GestureHandlerRootView style={{ flex: 1, backgroundColor: colors.background }}>
+      <SafeAreaProvider>
+        <RootLayoutInner />
+      </SafeAreaProvider>
+    </GestureHandlerRootView>
   );
 }
