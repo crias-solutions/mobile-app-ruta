@@ -226,19 +226,39 @@ export function useSensorRecorder(vehicle: string) {
       // Stop sensors
       const subs: any = (sensorIntervalRef as any).current;
       if (subs) {
-        try { subs.accelSub && subs.accelSub.remove(); } catch {}
-        try { subs.gyroSub && subs.gyroSub.remove(); } catch {}
-        try { subs.magSub && subs.magSub.remove(); } catch {}
+        try {
+          subs.accelSub && subs.accelSub.remove();
+        } catch (e) {
+          console.log('stopAll accelSub.remove error', e);
+        }
+        try {
+          subs.gyroSub && subs.gyroSub.remove();
+        } catch (e) {
+          console.log('stopAll gyroSub.remove error', e);
+        }
+        try {
+          subs.magSub && subs.magSub.remove();
+        } catch (e) {
+          console.log('stopAll magSub.remove error', e);
+        }
         (sensorIntervalRef as any).current = null;
       }
       // Stop GPS
       if (locationSubRef.current) {
-        try { locationSubRef.current.remove(); } catch {}
+        try {
+          locationSubRef.current.remove();
+        } catch (e) {
+          console.log('stopAll locationSub.remove error', e);
+        }
         locationSubRef.current = null;
       }
       // Stop network watcher
       if (networkUnsubRef.current) {
-        try { networkUnsubRef.current(); } catch {}
+        try {
+          networkUnsubRef.current();
+        } catch (e) {
+          console.log('stopAll networkUnsub error', e);
+        }
         networkUnsubRef.current = null;
       }
       if (flushTimerRef.current) {
