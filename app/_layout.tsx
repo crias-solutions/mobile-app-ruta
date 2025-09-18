@@ -4,13 +4,30 @@ import { GestureHandlerRootView } from 'react-native-gesture-handler';
 import { Stack, useGlobalSearchParams } from 'expo-router';
 import { StatusBar } from 'expo-status-bar';
 import { SafeAreaProvider, useSafeAreaInsets } from 'react-native-safe-area-context';
-import { Platform, SafeAreaView, Text } from 'react-native';
+import { Platform, SafeAreaView, Text, View, Image, StyleSheet } from 'react-native';
 import { commonStyles, colors } from '../styles/commonStyles';
 import { useEffect, useState } from 'react';
 import { setupErrorLogging } from '../utils/errorLogger';
 import { useFonts, Inter_400Regular, Inter_600SemiBold, Inter_700Bold } from '@expo-google-fonts/inter';
 
 const STORAGE_KEY = 'emulated_device';
+
+const styles = StyleSheet.create({
+  logoContainer: {
+    position: 'absolute',
+    bottom: 10,
+    left: 0,
+    right: 0,
+    alignItems: 'center',
+    zIndex: 1,
+  },
+  logo: {
+    width: 24,
+    height: 24,
+    opacity: 0.3,
+    resizeMode: 'contain',
+  },
+});
 
 function RootLayoutInner() {
   const actualInsets = useSafeAreaInsets();
@@ -74,6 +91,14 @@ function RootLayoutInner() {
     >
       <StatusBar style="light" />
       <Stack screenOptions={{ headerShown: false, animation: 'default' }} />
+      
+      {/* CRIAS Solutions Logo - Discreet placement at bottom */}
+      <View style={styles.logoContainer}>
+        <Image 
+          source={require('../assets/images/9f64f69f-0483-49b4-9307-b50b0fa3edac.png')} 
+          style={styles.logo}
+        />
+      </View>
     </SafeAreaView>
   );
 }
