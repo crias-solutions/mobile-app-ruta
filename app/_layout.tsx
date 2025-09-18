@@ -9,7 +9,6 @@ import { commonStyles, colors } from '../styles/commonStyles';
 import { useEffect, useState } from 'react';
 import { setupErrorLogging } from '../utils/errorLogger';
 import { useFonts, Inter_400Regular, Inter_600SemiBold, Inter_700Bold } from '@expo-google-fonts/inter';
-import RUTALogo from '../components/RUTALogo';
 
 const STORAGE_KEY = 'emulated_device';
 
@@ -31,21 +30,6 @@ const styles = StyleSheet.create({
     opacity: 0.6,
     marginTop: 8,
     fontFamily: 'Inter_400Regular',
-  },
-  headerContainer: {
-    flexDirection: 'row',
-    alignItems: 'center',
-    justifyContent: 'center',
-    paddingVertical: 10,
-    paddingHorizontal: 20,
-    borderBottomWidth: 1,
-    borderBottomColor: colors.border,
-  },
-  headerTitle: {
-    fontSize: 18,
-    fontFamily: 'Inter_600SemiBold',
-    color: colors.text,
-    marginLeft: 10,
   },
 });
 
@@ -110,10 +94,6 @@ function RootLayoutInner() {
       ]}
     >
       <StatusBar style="light" />
-      <View style={styles.headerContainer}>
-        <RUTALogo size="small" />
-        <Text style={styles.headerTitle}>RUTA Mobile</Text>
-      </View>
       <Stack screenOptions={{ headerShown: false, animation: 'default' }} />
     </SafeAreaView>
   );
@@ -128,15 +108,6 @@ export function CRIASLogo() {
         style={styles.logo}
       />
       <Text style={styles.logoText}>Powered by CRIAS Solutions</Text>
-    </View>
-  );
-}
-
-// RUTA Logo component for both Android and iOS
-export function RUTAAppLogo({ size = 'medium' }: { size?: 'small' | 'medium' | 'large' }) {
-  return (
-    <View style={[styles.logoContainer, { paddingVertical: 10 }]}>
-      <RUTALogo size={size} />
     </View>
   );
 }

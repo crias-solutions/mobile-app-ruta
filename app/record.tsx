@@ -6,7 +6,7 @@ import Button from '../components/Button';
 import SwipeToConfirm from '../components/SwipeToConfirm';
 import { colors, commonStyles, buttonStyles } from '../styles/commonStyles';
 import { useSensorRecorder } from '../hooks/useSensorRecorder';
-import { CRIASLogo, RUTAAppLogo } from './_layout';
+import { CRIASLogo } from './_layout';
 import * as Haptics from 'expo-haptics';
 
 export default function RecordScreen() {
@@ -117,7 +117,6 @@ export default function RecordScreen() {
     return (
       <ScrollView style={{ flex: 1, backgroundColor: colors.background }}>
         <View style={[commonStyles.content, { padding: 20 }]}>
-          {Platform.OS === 'android' && <RUTAAppLogo size="medium" />}
           <Text style={commonStyles.title}>Ready to ride</Text>
           <Text style={commonStyles.text}>
             Vehicle: {vehicle}

@@ -4,8 +4,9 @@ import { ScrollView, View, Text, Alert, Platform } from 'react-native';
 import { useEffect } from 'react';
 import { commonStyles, colors, buttonStyles } from '../styles/commonStyles';
 import { useConsent } from '../hooks/useConsent';
-import { CRIASLogo, RUTAAppLogo } from './_layout';
+import { CRIASLogo } from './_layout';
 import Button from '../components/Button';
+import RUTALogo from '../components/RUTALogo';
 
 export default function TermsScreen() {
   const { accepted, loading, acceptConsent } = useConsent();
@@ -19,8 +20,16 @@ export default function TermsScreen() {
   return (
     <ScrollView style={{ flex: 1, backgroundColor: colors.background }}>
       <View style={[commonStyles.content, { padding: 20 }]}>
-        {Platform.OS === 'android' && <RUTAAppLogo size="large" />}
-        <Text style={commonStyles.title}>Terms and Conditions</Text>
+        {/* Show RUTA logo only on the terms screen as the main app introduction */}
+        <View style={{ alignItems: 'center', paddingVertical: 20 }}>
+          <RUTALogo size="large" />
+          <Text style={[commonStyles.title, { marginTop: 10, textAlign: 'center' }]}>RUTA Mobile</Text>
+          <Text style={[commonStyles.text, { textAlign: 'center', opacity: 0.8 }]}>
+            Citizen Science Traffic Data Collection
+          </Text>
+        </View>
+        
+        <Text style={[commonStyles.title, { marginTop: 20 }]}>Terms and Conditions</Text>
         
         <View style={commonStyles.card}>
           <Text style={commonStyles.subtitle}>Citizen Science Project</Text>
