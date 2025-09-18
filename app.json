@@ -6,12 +6,12 @@
     "version": "1.0.0",
     "orientation": "portrait",
     "icon": "./assets/images/natively-dark.png",
-    "userInterfaceStyle": "light",
+    "userInterfaceStyle": "dark",
     "newArchEnabled": true,
     "splash": {
-      "image": "./assets/images/03c3eb6d-4b62-45d1-8c7d-df8b589efe1e.png",
+      "image": "./assets/images/b8ffb960-e288-4fb3-90d4-37234491e70a.png",
       "resizeMode": "contain",
-      "backgroundColor": "#ffffff"
+      "backgroundColor": "#1A1A2E"
     },
     "ios": {
       "supportsTablet": true,
@@ -25,10 +25,10 @@
     },
     "android": {
       "adaptiveIcon": {
-        "foregroundImage": "./assets/images/03c3eb6d-4b62-45d1-8c7d-df8b589efe1e.png",
+        "foregroundImage": "./assets/images/b8ffb960-e288-4fb3-90d4-37234491e70a.png",
         "backgroundColor": "#4A5A7A"
       },
-      "icon": "./assets/images/03c3eb6d-4b62-45d1-8c7d-df8b589efe1e.png",
+      "icon": "./assets/images/b8ffb960-e288-4fb3-90d4-37234491e70a.png",
       "package": "com.rutamobile.app",
       "permissions": [
         "ACCESS_FINE_LOCATION",

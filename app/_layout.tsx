@@ -109,13 +109,11 @@ function RootLayoutInner() {
         },
       ]}
     >
-      <StatusBar style="dark" />
-      {Platform.OS === 'android' && (
-        <View style={styles.headerContainer}>
-          <RUTALogo size="small" />
-          <Text style={styles.headerTitle}>RUTA Mobile</Text>
-        </View>
-      )}
+      <StatusBar style="light" />
+      <View style={styles.headerContainer}>
+        <RUTALogo size="small" />
+        <Text style={styles.headerTitle}>RUTA Mobile</Text>
+      </View>
       <Stack screenOptions={{ headerShown: false, animation: 'default' }} />
     </SafeAreaView>
   );
@@ -134,12 +132,8 @@ export function CRIASLogo() {
   );
 }
 
-// RUTA Logo component for Android only
+// RUTA Logo component for both Android and iOS
 export function RUTAAppLogo({ size = 'medium' }: { size?: 'small' | 'medium' | 'large' }) {
-  if (Platform.OS !== 'android') {
-    return null;
-  }
-
   return (
     <View style={[styles.logoContainer, { paddingVertical: 10 }]}>
       <RUTALogo size={size} />

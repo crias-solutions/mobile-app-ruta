@@ -26,7 +26,7 @@ export default function VehicleScreen() {
   return (
     <ScrollView style={{ flex: 1, backgroundColor: colors.background }}>
       <View style={[commonStyles.content, { padding: 20 }]}>
-        {Platform.OS === 'android' && <RUTAAppLogo size="medium" />}
+        <RUTAAppLogo size="medium" />
         <View style={{ width: '100%', flexDirection: 'row', alignItems: 'center', justifyContent: 'space-between' }}>
           <Text style={commonStyles.title}>Select your vehicle</Text>
           <Ionicons name="settings-outline" size={22} color={colors.text} onPress={() => setManageMode(m => !m)} />
@@ -72,7 +72,7 @@ export default function VehicleScreen() {
             <View style={{ width: '100%', marginTop: 10 }}>
               <Button 
                 text="Back" 
-                onPress={() => router.back()} 
+                onPress={() => router.push('/terms')} 
                 style={buttonStyles.backButton} 
               />
             </View>

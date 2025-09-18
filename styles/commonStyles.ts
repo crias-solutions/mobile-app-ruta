@@ -2,15 +2,15 @@
 import { StyleSheet } from 'react-native';
 
 export const colors = {
-  primary: '#162456',
+  primary: '#4A5A7A',
   secondary: '#5E60CE',
   accent: '#64B5F6',
-  background: '#FFFFFF',
-  backgroundAlt: '#F5F5F5',
-  text: '#1A1A1A',
-  grey: '#666666',
-  card: '#FFFFFF',
-  border: '#E0E0E0',
+  background: '#1A1A2E',
+  backgroundAlt: '#16213E',
+  text: '#FFFFFF',
+  grey: '#B0B0B0',
+  card: '#2A2A4A',
+  border: '#3A3A5A',
 };
 
 export const buttonStyles = StyleSheet.create({
@@ -23,7 +23,7 @@ export const buttonStyles = StyleSheet.create({
     boxShadow: '0px 4px 14px rgba(0,0,0,0.25)',
   },
   backButton: {
-    backgroundColor: colors.backgroundAlt,
+    backgroundColor: colors.primary,
     alignSelf: 'center',
     width: '100%',
     borderRadius: 10,
@@ -90,7 +90,7 @@ export const commonStyles = StyleSheet.create({
   },
   card: {
     backgroundColor: colors.backgroundAlt,
-    borderColor: colors.grey,
+    borderColor: colors.border,
     borderWidth: 1,
     borderRadius: 10,
     padding: 12,

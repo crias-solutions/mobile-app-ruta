@@ -1,45 +1,59 @@
 
-# RUTA Mobile App Logos for Android
+# RUTA Mobile App Logos
 
-This document explains how the RUTA Mobile App logos are implemented specifically for Android devices.
+This document describes the implementation of RUTA Mobile App logos with different resolutions for both Android and iOS platforms.
 
 ## Logo Files
 
-The following 5 RUTA logo files with different resolutions are available:
+The following 5 logo files are available with different resolutions:
 
-1. **26fb2f8c-55c0-48c6-98fd-3d740e74f3f4.png** - Small resolution (used for small UI elements)
-2. **cd71a84d-7eeb-453b-9ef2-ba38ad16759b.png** - Medium resolution (used for medium UI elements)
-3. **e1b7fb25-1490-407c-84a0-9d592d1d7078.png** - Large resolution (used for large UI elements)
-4. **6f799448-25a2-43b0-b365-09640a4b90d2.png** - Medium-large resolution (default fallback)
-5. **03c3eb6d-4b62-45d1-8c7d-df8b589efe1e.png** - Extra large resolution (used for app icon and splash screen)
+1. **eb0dc417-c307-4234-bba7-5445f45f296b.png** - Smallest resolution (used for 'small' size)
+2. **bece3d82-8669-4205-a2de-f8e04ec1b98a.png** - Medium resolution (used for 'medium' size)
+3. **5eafd586-5369-46d4-8355-a213a11cba4e.png** - Large resolution (used for 'large' size)
+4. **4c90ad4b-09ad-4245-94d0-56b1fc84080e.png** - Largest resolution (used for 'xlarge' size)
+5. **b8ffb960-e288-4fb3-90d4-37234491e70a.png** - Default medium-large resolution (used as default)
 
 ## Implementation
 
-### App Icon Configuration (app.json)
-- **Android App Icon**: Uses the largest resolution logo (03c3eb6d-4b62-45d1-8c7d-df8b589efe1e.png)
-- **Adaptive Icon**: Configured with RUTA brand color background (#4A5A7A)
-- **Splash Screen**: Uses the same high-resolution logo
-
 ### RUTALogo Component
-The `RUTALogo` component automatically selects the appropriate resolution based on the requested size:
-- `small`: 32x32px using smallest resolution logo
-- `medium`: 48x48px using medium resolution logo  
-- `large`: 80x80px using large resolution logo
-- `xlarge`: 120x120px using largest resolution logo
 
-### Platform Restriction
-- RUTA logos are **only displayed on Android devices**
-- On iOS, the component returns null and doesn't render
-- This ensures brand consistency per platform requirements
+The `RUTALogo` component (`components/RUTALogo.tsx`) handles the display of RUTA logos with different sizes:
 
-### Usage in App
-- Header logo in main layout (Android only)
-- Available as `RUTAAppLogo` export from `_layout.tsx`
-- Can be imported and used in any screen via the `RUTALogo` component
+- **small**: 32x32 pixels
+- **medium**: 48x48 pixels  
+- **large**: 80x80 pixels
+- **xlarge**: 120x120 pixels
 
-## App Configuration Changes
-- App name changed to "RUTA Mobile"
-- Package name: `com.rutamobile.app`
-- Scheme: `ruta-mobile`
-- Light theme implementation
-- Android-specific permissions added for location and storage access
+### Platform Support
+
+The RUTA logos are now supported on **both Android and iOS platforms**, unlike the previous Android-only implementation.
+
+### Usage
+
+The logos are used in:
+
+1. **App header** - Small logo in the top navigation bar
+2. **Screen headers** - Medium logo at the top of main screens
+3. **Splash screen** - Large logo for app startup
+4. **App icons** - Various resolutions for different device densities
+
+### Integration
+
+The logos are integrated through:
+
+- `RUTAAppLogo` component in `app/_layout.tsx`
+- Direct usage of `RUTALogo` component in individual screens
+- App configuration in `app.json` for splash screen and icons
+
+## Configuration
+
+The app configuration (`app.json`) has been updated to use the RUTA logos for:
+
+- Splash screen background and image
+- Android adaptive icon
+- iOS app icon
+- Theme set to dark mode to match the logo design
+
+## Cross-Platform Consistency
+
+The implementation ensures consistent branding across both Android and iOS platforms while respecting platform-specific design guidelines and icon requirements.
