@@ -30,5 +30,10 @@ export function useConsent() {
     }
   };
 
-  return { accepted, setAccepted, loading };
+  const acceptConsent = () => {
+    console.log('User accepted consent');
+    setAccepted(true);
+  };
+
+  return { accepted, setAccepted, acceptConsent, loading };
 }
