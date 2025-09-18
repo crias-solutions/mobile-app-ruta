@@ -4,13 +4,14 @@ import { GestureHandlerRootView } from 'react-native-gesture-handler';
 import { Stack, useGlobalSearchParams } from 'expo-router';
 import { StatusBar } from 'expo-status-bar';
 import { SafeAreaProvider, useSafeAreaInsets } from 'react-native-safe-area-context';
-import { Platform, SafeAreaView, Text, View, Image, StyleSheet } from 'react-native';
+import { Platform, SafeAreaView, Text, View, Image, StyleSheet, TouchableOpacity, Linking } from 'react-native';
 import { commonStyles, colors } from '../styles/commonStyles';
 import { useEffect, useState } from 'react';
 import { setupErrorLogging } from '../utils/errorLogger';
 import { useFonts, Inter_400Regular, Inter_600SemiBold, Inter_700Bold } from '@expo-google-fonts/inter';
 
 const STORAGE_KEY = 'emulated_device';
+const CRIAS_WEBSITE_URL = 'https://crias.solutions/';
 
 const styles = StyleSheet.create({
   logoContainer: {
@@ -101,14 +102,28 @@ function RootLayoutInner() {
 
 // Logo component that can be imported and used in individual screens
 export function CRIASLogo() {
+  const handleLogoPress = async () => {
+    try {
+      console.log('CRIAS logo pressed, opening website:', CRIAS_WEBSITE_URL);
+      const supported = await Linking.canOpenURL(CRIAS_WEBSITE_URL);
+      if (supported) {
+        await Linking.openURL(CRIAS_WEBSITE_URL);
+      } else {
+        console.error('Cannot open URL:', CRIAS_WEBSITE_URL);
+      }
+    } catch (error) {
+      console.error('Error opening CRIAS website:', error);
+    }
+  };
+
   return (
-    <View style={styles.logoContainer}>
+    <TouchableOpacity style={styles.logoContainer} onPress={handleLogoPress} activeOpacity={0.7}>
       <Image 
         source={require('../assets/images/9f64f69f-0483-49b4-9307-b50b0fa3edac.png')} 
         style={styles.logo}
       />
       <Text style={styles.logoText}>Powered by CRIAS Solutions</Text>
-    </View>
+    </TouchableOpacity>
   );
 }
 
