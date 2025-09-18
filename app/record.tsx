@@ -1,11 +1,12 @@
 
 import { useEffect, useMemo, useRef, useState } from 'react';
-import { View, Text, Alert, Platform, ActivityIndicator } from 'react-native';
+import { View, Text, Alert, Platform, ActivityIndicator, ScrollView } from 'react-native';
 import { useLocalSearchParams, router } from 'expo-router';
 import Button from '../components/Button';
 import SwipeToConfirm from '../components/SwipeToConfirm';
 import { colors, commonStyles, buttonStyles } from '../styles/commonStyles';
 import { useSensorRecorder } from '../hooks/useSensorRecorder';
+import { CRIASLogo } from './_layout';
 import * as Haptics from 'expo-haptics';
 
 export default function RecordScreen() {
@@ -112,10 +113,10 @@ export default function RecordScreen() {
     );
   };
 
-  return (
-    <View style={[commonStyles.container, { padding: 20 }]}>
-      {!started && (
-        <View style={{ width: '100%', maxWidth: 700 }}>
+  if (!started) {
+    return (
+      <ScrollView style={{ flex: 1, backgroundColor: colors.background }}>
+        <View style={[commonStyles.content, { padding: 20 }]}>
           <Text style={commonStyles.title}>Ready to ride</Text>
           <Text style={commonStyles.text}>
             Vehicle: {vehicle}
@@ -126,25 +127,30 @@ export default function RecordScreen() {
           </Text>
           <Button text="Start" onPress={handleStart} style={[buttonStyles.instructionsButton, { marginTop: 20 }]} />
           <Button text="Back" onPress={() => router.back()} style={[buttonStyles.backButton, { marginTop: 10 }]} />
+          
+          {/* CRIAS Solutions Logo at bottom of page content */}
+          <CRIASLogo />
         </View>
-      )}
+      </ScrollView>
+    );
+  }
 
-      {started && (
-        <View style={{ width: '100%', maxWidth: 800, alignItems: 'center', justifyContent: 'center', flex: 1 }}>
-          <Text style={commonStyles.title}>Recording…</Text>
-          <Text style={commonStyles.text}>The UI is minimized to reduce resource usage.</Text>
-          <ActivityIndicator style={{ marginVertical: 20 }} color={colors.accent} />
-          <Button text="Stop" onPress={confirmStop} style={[buttonStyles.instructionsButton, { backgroundColor: '#8e24aa' }]} />
-          <View style={{ height: 24 }} />
-          <SwipeToConfirm
-            text="Swipe to Stop"
-            trackColor="#1e2a44"
-            thumbColor="#64B5F6"
-            onConfirmed={confirmStop}
-          />
-          {finishing && <Text style={[commonStyles.text, { marginTop: 10 }]}>Finalizing files…</Text>}
-        </View>
-      )}
+  return (
+    <View style={[commonStyles.container, { padding: 20 }]}>
+      <View style={{ width: '100%', maxWidth: 800, alignItems: 'center', justifyContent: 'center', flex: 1 }}>
+        <Text style={commonStyles.title}>Recording…</Text>
+        <Text style={commonStyles.text}>The UI is minimized to reduce resource usage.</Text>
+        <ActivityIndicator style={{ marginVertical: 20 }} color={colors.accent} />
+        <Button text="Stop" onPress={confirmStop} style={[buttonStyles.instructionsButton, { backgroundColor: '#8e24aa' }]} />
+        <View style={{ height: 24 }} />
+        <SwipeToConfirm
+          text="Swipe to Stop"
+          trackColor="#1e2a44"
+          thumbColor="#64B5F6"
+          onConfirmed={confirmStop}
+        />
+        {finishing && <Text style={[commonStyles.text, { marginTop: 10 }]}>Finalizing files…</Text>}
+      </View>
     </View>
   );
 }

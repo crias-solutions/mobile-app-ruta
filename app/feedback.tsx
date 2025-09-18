@@ -1,10 +1,11 @@
 
-import { useLocalSearchParams, router } from 'expo-router';
-import { useEffect, useMemo, useState } from 'react';
 import { View, Text, ScrollView } from 'react-native';
-import Button from '../components/Button';
-import { commonStyles, colors, buttonStyles } from '../styles/commonStyles';
 import * as FileSystem from 'expo-file-system';
+import { useLocalSearchParams, router } from 'expo-router';
+import { commonStyles, colors, buttonStyles } from '../styles/commonStyles';
+import { useEffect, useMemo, useState } from 'react';
+import { CRIASLogo } from './_layout';
+import Button from '../components/Button';
 
 interface Stat {
   label: string;
@@ -12,96 +13,129 @@ interface Stat {
   unit?: string;
 }
 
-function StatBar({ label, value, max = 100, unit }: { label: string; value: number; max?: number; unit?: string }) {
-  const pct = Math.min(100, Math.max(0, (value / max) * 100));
+function parseAccelMagnitude(csv: string): number[] {
+  const lines = csv.split('\n').slice(1); // Skip header
+  return lines
+    .filter(line => line.trim())
+    .map(line => {
+      const [, , , ax, ay, az] = line.split(',').map(Number);
+      return Math.sqrt(ax * ax + ay * ay + az * az);
+    });
+}
+
+function StatBar({ label, value, max, unit }: { label: string; value: number; max?: number; unit?: string }) {
+  const percentage = max ? Math.min((value / max) * 100, 100) : 0;
+  
   return (
-    <View style={{ width: '100%', marginBottom: 12 }}>
-      <Text style={[commonStyles.text, { marginBottom: 6 }]}>{label}: {value.toFixed(2)}{unit || ''}</Text>
-      <View style={{ width: '100%', height: 10, backgroundColor: '#1e2a44', borderRadius: 6 }}>
-        <View style={{ width: `${pct}%`, height: 10, backgroundColor: colors.accent, borderRadius: 6 }} />
+    <View style={{ marginVertical: 8 }}>
+      <View style={{ flexDirection: 'row', justifyContent: 'space-between', marginBottom: 4 }}>
+        <Text style={[commonStyles.text, { fontSize: 14 }]}>{label}</Text>
+        <Text style={[commonStyles.text, { fontSize: 14, fontWeight: '600' }]}>
+          {value.toFixed(1)}{unit || ''}
+        </Text>
+      </View>
+      <View style={{ 
+        height: 8, 
+        backgroundColor: colors.backgroundAlt, 
+        borderRadius: 4,
+        overflow: 'hidden'
+      }}>
+        <View style={{ 
+          height: '100%', 
+          width: `${percentage}%`, 
+          backgroundColor: colors.accent,
+          borderRadius: 4
+        }} />
       </View>
     </View>
   );
 }
 
-function parseAccelMagnitude(csv: string): number[] {
-  const lines = csv.split('\n');
-  const arr: number[] = [];
-  for (let i = 1; i < lines.length; i++) {
-    const row = lines[i].trim();
-    if (!row) continue;
-    const parts = row.split(',');
-    if (parts[1] !== 'accelerometer') continue;
-    const x = parseFloat(parts[2]);
-    const y = parseFloat(parts[3]);
-    const z = parseFloat(parts[4]);
-    if (isFinite(x) && isFinite(y) && isFinite(z)) {
-      const mag = Math.sqrt(x * x + y * y + z * z);
-      arr.push(mag);
-    }
-  }
-  return arr;
-}
-
 export default function FeedbackScreen() {
   const { rideId } = useLocalSearchParams<{ rideId?: string }>();
-  const [stats, setStats] = useState<Stat[] | null>(null);
+  const [stats, setStats] = useState<Stat[]>([]);
 
   useEffect(() => {
-    const load = async () => {
-      if (!rideId) return;
+    if (!rideId) return;
+
+    const loadStats = async () => {
       try {
-        const dir = FileSystem.documentDirectory + 'rides/' + rideId;
-        const sensorCsvPath = dir + '/sensor.csv';
-        const content = await FileSystem.readAsStringAsync(sensorCsvPath);
-        const mags = parseAccelMagnitude(content);
-        if (!mags.length) {
-          setStats([
-            { label: 'Samples', value: 0 },
-          ]);
-          return;
+        const sensorPath = `${FileSystem.documentDirectory}rides/${rideId}_sensors.csv`;
+        const sensorExists = await FileSystem.getInfoAsync(sensorPath);
+        
+        if (sensorExists.exists) {
+          const csv = await FileSystem.readAsStringAsync(sensorPath);
+          const magnitudes = parseAccelMagnitude(csv);
+          
+          if (magnitudes.length > 0) {
+            const maxMag = Math.max(...magnitudes);
+            const avgMag = magnitudes.reduce((a, b) => a + b, 0) / magnitudes.length;
+            const duration = magnitudes.length / 10; // Assuming 10Hz sampling
+            
+            setStats([
+              { label: 'Ride Duration', value: duration, unit: ' sec' },
+              { label: 'Data Points', value: magnitudes.length },
+              { label: 'Avg Acceleration', value: avgMag, unit: ' m/s²' },
+              { label: 'Max Acceleration', value: maxMag, unit: ' m/s²' },
+            ]);
+          }
         }
-        const avg = mags.reduce((a, b) => a + b, 0) / mags.length;
-        let variance = 0;
-        for (const m of mags) {
-          variance += (m - avg) * (m - avg);
-        }
-        variance /= mags.length;
-        const smoothness = 1 / (1 + variance); // simple inverse-variance heuristic [0..1]
-        setStats([
-          { label: 'Samples', value: mags.length },
-          { label: 'Avg accel magnitude', value: avg, unit: ' m/s²' },
-          { label: 'Variance', value: variance },
-          { label: 'Smoothness (higher is smoother)', value: smoothness * 100, unit: '%' },
-        ]);
-      } catch (e) {
-        console.log('feedback parse error', e);
-        setStats([{ label: 'Error reading data', value: 0 }]);
+      } catch (error) {
+        console.log('Error loading stats:', error);
       }
     };
-    load();
+
+    loadStats();
   }, [rideId]);
+
+  const maxValues = useMemo(() => {
+    return {
+      duration: 3600, // 1 hour max for visualization
+      dataPoints: 36000, // 1 hour at 10Hz
+      avgAccel: 20, // reasonable max for avg
+      maxAccel: 50, // reasonable max for peak
+    };
+  }, []);
 
   return (
     <ScrollView style={{ flex: 1, backgroundColor: colors.background }}>
-      <View style={[commonStyles.content, { padding: 20, alignItems: 'stretch' }]}>
-        <Text style={commonStyles.title}>Ride feedback</Text>
-        <Text style={commonStyles.text}>Below is a simple, on-device, visual-only summary from your data.</Text>
-        <View style={[commonStyles.card, { marginTop: 16 }]}>
-          {stats ? (
-            <>
-              {stats.map((s, idx) => (
-                <StatBar key={idx} label={s.label} value={s.value} max={s.label.includes('Smoothness') ? 100 : s.value || 100} unit={s.unit} />
-              ))}
-            </>
-          ) : (
-            <Text style={commonStyles.text}>Processing…</Text>
-          )}
+      <View style={[commonStyles.content, { padding: 20 }]}>
+        <Text style={commonStyles.title}>Ride Summary</Text>
+        <Text style={[commonStyles.text, { marginBottom: 20 }]}>
+          Here&apos;s a simple analysis of your ride data processed locally on your device.
+        </Text>
+
+        <View style={commonStyles.card}>
+          <Text style={commonStyles.subtitle}>Statistics</Text>
+          {stats.map((stat, index) => (
+            <StatBar
+              key={index}
+              label={stat.label}
+              value={stat.value}
+              unit={stat.unit}
+              max={
+                stat.label.includes('Duration') ? maxValues.duration :
+                stat.label.includes('Data Points') ? maxValues.dataPoints :
+                stat.label.includes('Avg') ? maxValues.avgAccel :
+                stat.label.includes('Max') ? maxValues.maxAccel :
+                undefined
+              }
+            />
+          ))}
         </View>
 
-        <View style={{ width: '100%', marginTop: 20 }}>
-          <Button text="Done" onPress={() => router.replace('/vehicle')} style={buttonStyles.instructionsButton} />
-        </View>
+        <Text style={[commonStyles.text, { marginTop: 10, fontSize: 13, opacity: 0.8 }]}>
+          This analysis is performed entirely on your device. No data is sent anywhere for this summary.
+        </Text>
+
+        <Button
+          text="Start New Ride"
+          onPress={() => router.replace('/vehicle')}
+          style={[buttonStyles.instructionsButton, { marginTop: 20 }]}
+        />
+
+        {/* CRIAS Solutions Logo at bottom of page content */}
+        <CRIASLogo />
       </View>
     </ScrollView>
   );

@@ -14,18 +14,22 @@ const STORAGE_KEY = 'emulated_device';
 
 const styles = StyleSheet.create({
   logoContainer: {
-    position: 'absolute',
-    bottom: 10,
-    left: 0,
-    right: 0,
     alignItems: 'center',
-    zIndex: 1,
+    paddingVertical: 20,
+    paddingBottom: 30,
   },
   logo: {
-    width: 24,
-    height: 24,
-    opacity: 0.3,
+    width: 80,
+    height: 80,
+    opacity: 0.8,
     resizeMode: 'contain',
+  },
+  logoText: {
+    fontSize: 12,
+    color: colors.text,
+    opacity: 0.6,
+    marginTop: 8,
+    fontFamily: 'Inter_400Regular',
   },
 });
 
@@ -91,15 +95,20 @@ function RootLayoutInner() {
     >
       <StatusBar style="light" />
       <Stack screenOptions={{ headerShown: false, animation: 'default' }} />
-      
-      {/* CRIAS Solutions Logo - Discreet placement at bottom */}
-      <View style={styles.logoContainer}>
-        <Image 
-          source={require('../assets/images/9f64f69f-0483-49b4-9307-b50b0fa3edac.png')} 
-          style={styles.logo}
-        />
-      </View>
     </SafeAreaView>
+  );
+}
+
+// Logo component that can be imported and used in individual screens
+export function CRIASLogo() {
+  return (
+    <View style={styles.logoContainer}>
+      <Image 
+        source={require('../assets/images/9f64f69f-0483-49b4-9307-b50b0fa3edac.png')} 
+        style={styles.logo}
+      />
+      <Text style={styles.logoText}>Powered by CRIAS Solutions</Text>
+    </View>
   );
 }
 

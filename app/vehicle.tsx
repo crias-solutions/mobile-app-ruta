@@ -8,6 +8,7 @@ import VehicleCard from '../components/VehicleCard';
 import { commonStyles, colors, buttonStyles } from '../styles/commonStyles';
 import { useVehicles } from '../hooks/useVehicles';
 import { getFreeStorageMB } from '../utils/storage';
+import { CRIASLogo } from './_layout';
 
 export default function VehicleScreen() {
   const { availableVehicles, enabledMap, toggleEnabled, lastSelected, setLastSelected } = useVehicles();
@@ -29,6 +30,7 @@ export default function VehicleScreen() {
           <Text style={commonStyles.title}>Select your vehicle</Text>
           <Ionicons name="settings-outline" size={22} color={colors.text} onPress={() => setManageMode(m => !m)} />
         </View>
+        
         {typeof freeMB === 'number' && freeMB < 50 && (
           <View style={[commonStyles.card, { borderColor: '#ffb74d' }]}>
             <Text style={[commonStyles.text, { color: '#ffcc80' }]}>
@@ -66,6 +68,13 @@ export default function VehicleScreen() {
                 />
               </View>
             )}
+            <View style={{ width: '100%', marginTop: 10 }}>
+              <Button 
+                text="Back" 
+                onPress={() => router.back()} 
+                style={buttonStyles.backButton} 
+              />
+            </View>
           </>
         )}
 
@@ -97,6 +106,9 @@ export default function VehicleScreen() {
             </View>
           </>
         )}
+
+        {/* CRIAS Solutions Logo at bottom of page content */}
+        <CRIASLogo />
       </View>
     </ScrollView>
   );
