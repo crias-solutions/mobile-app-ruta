@@ -8,10 +8,12 @@ import VehicleCard from '../components/VehicleCard';
 import { commonStyles, colors, buttonStyles } from '../styles/commonStyles';
 import { useVehicles } from '../hooks/useVehicles';
 import { getFreeStorageMB } from '../utils/storage';
+import { useConsent } from '../hooks/useConsent';
 import { CRIASLogo } from './_layout';
 
 export default function VehicleScreen() {
   const { availableVehicles, enabledMap, toggleEnabled, lastSelected, setLastSelected } = useVehicles();
+  const { setAccepted } = useConsent();
   const [manageMode, setManageMode] = useState(false);
   const [freeMB, setFreeMB] = useState<number | null>(null);
 
@@ -71,7 +73,11 @@ export default function VehicleScreen() {
             <View style={{ width: '100%', marginTop: 10 }}>
               <Button 
                 text="Back" 
-                onPress={() => router.replace('/terms')} 
+                onPress={async () => {
+                  console.log('Back button pressed - clearing consent and returning to terms');
+                  await setAccepted(false);
+                  router.replace('/terms');
+                }} 
                 style={buttonStyles.backButton} 
               />
             </View>
