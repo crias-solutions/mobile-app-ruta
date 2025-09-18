@@ -1,21 +1,22 @@
 
 {
   "expo": {
-    "name": "Natively",
-    "slug": "Natively",
+    "name": "RUTA Mobile",
+    "slug": "ruta-mobile",
     "version": "1.0.0",
     "orientation": "portrait",
     "icon": "./assets/images/natively-dark.png",
-    "userInterfaceStyle": "dark",
+    "userInterfaceStyle": "light",
     "newArchEnabled": true,
     "splash": {
-      "image": "./assets/images/natively-dark.png",
+      "image": "./assets/images/03c3eb6d-4b62-45d1-8c7d-df8b589efe1e.png",
       "resizeMode": "contain",
-      "backgroundColor": "#000000"
+      "backgroundColor": "#ffffff"
     },
     "ios": {
       "supportsTablet": true,
       "bundleIdentifier": "com.anonymous.Natively",
+      "icon": "./assets/images/natively-dark.png",
       "infoPlist": {
         "ITSAppUsesNonExemptEncryption": false,
         "NSLocationWhenInUseUsageDescription": "This app collects anonymous GPS data only when your device is online to support a Citizen Science mobility study.",
@@ -24,10 +25,17 @@
     },
     "android": {
       "adaptiveIcon": {
-        "foregroundImage": "./assets/images/natively-dark.png",
-        "backgroundColor": "#000000"
+        "foregroundImage": "./assets/images/03c3eb6d-4b62-45d1-8c7d-df8b589efe1e.png",
+        "backgroundColor": "#4A5A7A"
       },
-      "package": "com.anonymous.Natively"
+      "icon": "./assets/images/03c3eb6d-4b62-45d1-8c7d-df8b589efe1e.png",
+      "package": "com.rutamobile.app",
+      "permissions": [
+        "ACCESS_FINE_LOCATION",
+        "ACCESS_COARSE_LOCATION",
+        "WRITE_EXTERNAL_STORAGE",
+        "READ_EXTERNAL_STORAGE"
+      ]
     },
     "web": {
       "favicon": "./assets/images/final_quest_240x240.png",
@@ -37,7 +45,7 @@
       "expo-font",
       "expo-router"
     ],
-    "scheme": "natively",
+    "scheme": "ruta-mobile",
     "experiments": {
       "typedRoutes": true
     },

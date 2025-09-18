@@ -8,7 +8,7 @@ import VehicleCard from '../components/VehicleCard';
 import { commonStyles, colors, buttonStyles } from '../styles/commonStyles';
 import { useVehicles } from '../hooks/useVehicles';
 import { getFreeStorageMB } from '../utils/storage';
-import { CRIASLogo } from './_layout';
+import { CRIASLogo, RUTAAppLogo } from './_layout';
 
 export default function VehicleScreen() {
   const { availableVehicles, enabledMap, toggleEnabled, lastSelected, setLastSelected } = useVehicles();
@@ -26,6 +26,7 @@ export default function VehicleScreen() {
   return (
     <ScrollView style={{ flex: 1, backgroundColor: colors.background }}>
       <View style={[commonStyles.content, { padding: 20 }]}>
+        {Platform.OS === 'android' && <RUTAAppLogo size="medium" />}
         <View style={{ width: '100%', flexDirection: 'row', alignItems: 'center', justifyContent: 'space-between' }}>
           <Text style={commonStyles.title}>Select your vehicle</Text>
           <Ionicons name="settings-outline" size={22} color={colors.text} onPress={() => setManageMode(m => !m)} />

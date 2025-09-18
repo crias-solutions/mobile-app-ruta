@@ -5,11 +5,12 @@ export const colors = {
   primary: '#162456',
   secondary: '#5E60CE',
   accent: '#64B5F6',
-  background: '#101824',
-  backgroundAlt: '#162133',
-  text: '#e3e3e3',
-  grey: '#90CAF9',
-  card: '#193cb8',
+  background: '#FFFFFF',
+  backgroundAlt: '#F5F5F5',
+  text: '#1A1A1A',
+  grey: '#666666',
+  card: '#FFFFFF',
+  border: '#E0E0E0',
 };
 
 export const buttonStyles = StyleSheet.create({

@@ -1,10 +1,10 @@
 
 import { router } from 'expo-router';
-import { ScrollView, View, Text, Alert } from 'react-native';
+import { ScrollView, View, Text, Alert, Platform } from 'react-native';
 import { useEffect } from 'react';
 import { commonStyles, colors, buttonStyles } from '../styles/commonStyles';
 import { useConsent } from '../hooks/useConsent';
-import { CRIASLogo } from './_layout';
+import { CRIASLogo, RUTAAppLogo } from './_layout';
 import Button from '../components/Button';
 
 export default function TermsScreen() {
@@ -19,6 +19,7 @@ export default function TermsScreen() {
   return (
     <ScrollView style={{ flex: 1, backgroundColor: colors.background }}>
       <View style={[commonStyles.content, { padding: 20 }]}>
+        {Platform.OS === 'android' && <RUTAAppLogo size="large" />}
         <Text style={commonStyles.title}>Terms and Conditions</Text>
         
         <View style={commonStyles.card}>

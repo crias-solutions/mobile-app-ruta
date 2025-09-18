@@ -1,10 +1,10 @@
 
-import { View, Text, ScrollView } from 'react-native';
+import { View, Text, ScrollView, Platform } from 'react-native';
 import * as FileSystem from 'expo-file-system';
 import { useLocalSearchParams, router } from 'expo-router';
 import { commonStyles, colors, buttonStyles } from '../styles/commonStyles';
 import { useEffect, useMemo, useState } from 'react';
-import { CRIASLogo } from './_layout';
+import { CRIASLogo, RUTAAppLogo } from './_layout';
 import Button from '../components/Button';
 
 interface Stat {
@@ -100,6 +100,7 @@ export default function FeedbackScreen() {
   return (
     <ScrollView style={{ flex: 1, backgroundColor: colors.background }}>
       <View style={[commonStyles.content, { padding: 20 }]}>
+        {Platform.OS === 'android' && <RUTAAppLogo size="medium" />}
         <Text style={commonStyles.title}>Ride Summary</Text>
         <Text style={[commonStyles.text, { marginBottom: 20 }]}>
           Here&apos;s a simple analysis of your ride data processed locally on your device.
