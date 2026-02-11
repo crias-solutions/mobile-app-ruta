@@ -10,6 +10,7 @@ import { useVehicles } from '../hooks/useVehicles';
 import { getFreeStorageMB } from '../utils/storage';
 import { useConsent } from '../hooks/useConsent';
 import { CRIASLogo } from './_layout';
+import i18n from '../utils/i18n';
 
 export default function VehicleScreen() {
   const { availableVehicles, enabledMap, toggleEnabled, lastSelected, setLastSelected } = useVehicles();
@@ -25,18 +26,22 @@ export default function VehicleScreen() {
     return availableVehicles.filter(v => enabledMap[v.id]);
   }, [availableVehicles, enabledMap]);
 
+  const getVehicleLabel = (vehicleId: string) => {
+    return i18n.t(`vehicle.vehicles.${vehicleId}`);
+  };
+
   return (
     <ScrollView style={{ flex: 1, backgroundColor: colors.background }}>
       <View style={[commonStyles.content, { padding: 20 }]}>
         <View style={{ width: '100%', flexDirection: 'row', alignItems: 'center', justifyContent: 'space-between' }}>
-          <Text style={commonStyles.title}>Select your vehicle</Text>
+          <Text style={commonStyles.title}>{i18n.t('vehicle.title')}</Text>
           <Ionicons name="settings-outline" size={22} color={colors.text} onPress={() => setManageMode(m => !m)} />
         </View>
         
         {typeof freeMB === 'number' && freeMB < 50 && (
           <View style={[commonStyles.card, { borderColor: '#ffb74d' }]}>
             <Text style={[commonStyles.text, { color: '#ffcc80' }]}>
-              Low storage: {freeMB.toFixed(1)} MB available. Recording may stop if storage runs out.
+              {i18n.t('vehicle.lowStorage', { freeMB: freeMB.toFixed(1) })}
             </Text>
           </View>
         )}
@@ -44,14 +49,14 @@ export default function VehicleScreen() {
         {!manageMode && (
           <>
             <Text style={[commonStyles.text, { marginBottom: 10 }]}>
-              Choose a mode of transport below. You can edit the list by tapping the settings icon.
+              {i18n.t('vehicle.description')}
             </Text>
             <View style={{ width: '100%', flexDirection: 'row', flexWrap: 'wrap', gap: 12, justifyContent: 'center' }}>
               {enabledVehicles.map((vehicle) => (
                 <VehicleCard
                   key={vehicle.id}
                   id={vehicle.id}
-                  label={vehicle.label}
+                  label={getVehicleLabel(vehicle.id)}
                   icon={vehicle.icon}
                   category={vehicle.category}
                   onPress={() => {
@@ -64,7 +69,7 @@ export default function VehicleScreen() {
             {lastSelected && (
               <View style={{ width: '100%', marginTop: 20 }}>
                 <Button
-                  text={`Quick start with ${lastSelected}`}
+                  text={i18n.t('vehicle.quickStart', { vehicle: getVehicleLabel(lastSelected) })}
                   onPress={() => router.push({ pathname: '/record', params: { vehicle: lastSelected } })}
                   style={buttonStyles.instructionsButton}
                 />
@@ -72,7 +77,7 @@ export default function VehicleScreen() {
             )}
             <View style={{ width: '100%', marginTop: 10 }}>
               <Button 
-                text="Back" 
+                text={i18n.t('common.back')}
                 onPress={async () => {
                   console.log('Back button pressed - clearing consent and returning to terms');
                   await setAccepted(false);
@@ -86,9 +91,11 @@ export default function VehicleScreen() {
 
         {manageMode && (
           <>
-            <Text style={[commonStyles.subtitle, { marginTop: 10 }]}>Manage vehicle list</Text>
+            <Text style={[commonStyles.subtitle, { marginTop: 10 }]}>
+              {i18n.t('vehicle.manageTitle')}
+            </Text>
             <Text style={[commonStyles.text, { marginBottom: 10 }]}>
-              Toggle which vehicle types are visible on the selection screen.
+              {i18n.t('vehicle.manageDescription')}
             </Text>
             <View style={{ width: '100%', flexDirection: 'row', flexWrap: 'wrap', gap: 12, justifyContent: 'center' }}>
               {availableVehicles.map((vehicle) => {
@@ -97,7 +104,7 @@ export default function VehicleScreen() {
                   <VehicleCard
                     key={vehicle.id}
                     id={vehicle.id}
-                    label={vehicle.label}
+                    label={getVehicleLabel(vehicle.id)}
                     icon={vehicle.icon}
                     category={vehicle.category}
                     enabled={enabled}
@@ -108,7 +115,11 @@ export default function VehicleScreen() {
               })}
             </View>
             <View style={{ width: '100%', marginTop: 20 }}>
-              <Button text="Done" onPress={() => setManageMode(false)} style={buttonStyles.instructionsButton} />
+              <Button 
+                text={i18n.t('common.done')} 
+                onPress={() => setManageMode(false)} 
+                style={buttonStyles.instructionsButton} 
+              />
             </View>
           </>
         )}

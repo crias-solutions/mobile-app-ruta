@@ -8,11 +8,14 @@ import { colors, commonStyles, buttonStyles } from '../styles/commonStyles';
 import { useSensorRecorder } from '../hooks/useSensorRecorder';
 import { CRIASLogo } from './_layout';
 import * as Haptics from 'expo-haptics';
+import i18n from '../utils/i18n';
 
 export default function RecordScreen() {
   const { vehicle } = useLocalSearchParams<{ vehicle?: string }>();
   const [started, setStarted] = useState(false);
   const [finishing, setFinishing] = useState(false);
+  const [showFeedbackOptions, setShowFeedbackOptions] = useState(false);
+  const [completedRideId, setCompletedRideId] = useState<string | null>(null);
   const {
     isRecording,
     canRecord,
@@ -24,21 +27,31 @@ export default function RecordScreen() {
 
   useEffect(() => {
     if (!vehicle) {
-      Alert.alert('Vehicle missing', 'Please select a vehicle first.', [
-        { text: 'OK', onPress: () => router.replace('/vehicle') },
-      ]);
+      Alert.alert(
+        i18n.t('record.vehicleMissing'), 
+        i18n.t('record.vehicleMissingMessage'), 
+        [{ text: i18n.t('common.ok'), onPress: () => router.replace('/vehicle') }]
+      );
     }
   }, [vehicle]);
 
   useEffect(() => {
     if (error) {
-      Alert.alert('Cannot start', error, [{ text: 'OK' }]);
+      Alert.alert(i18n.t('record.cannotStart'), error, [{ text: i18n.t('common.ok') }]);
     }
   }, [error]);
 
+  const getVehicleLabel = (vehicleId: string) => {
+    return i18n.t(`vehicle.vehicles.${vehicleId}`);
+  };
+
   const handleStart = async () => {
     if (!canRecord) {
-      Alert.alert('Not ready', 'Sensors or storage are not available. Please try again.', [{ text: 'OK' }]);
+      Alert.alert(
+        i18n.t('record.notReady'), 
+        i18n.t('record.notReady'), 
+        [{ text: i18n.t('common.ok') }]
+      );
       return;
     }
     console.log('Starting recording…');
@@ -47,18 +60,21 @@ export default function RecordScreen() {
     if (ok) {
       setStarted(true);
     } else {
-      Alert.alert('Failed to start', 'An error occurred while starting recording.');
+      Alert.alert(
+        i18n.t('record.failedToStart'), 
+        i18n.t('record.failedToStartMessage')
+      );
     }
   };
 
   const confirmStop = () => {
     Alert.alert(
-      'Stop recording?',
-      'Are you sure you want to stop?',
+      i18n.t('record.stopConfirmTitle'),
+      i18n.t('record.stopConfirmMessage'),
       [
-        { text: 'Cancel', style: 'cancel' },
+        { text: i18n.t('common.cancel'), style: 'cancel' },
         {
-          text: 'Stop',
+          text: i18n.t('common.stop'),
           style: 'destructive',
           onPress: async () => {
             await Haptics.notificationAsync(Haptics.NotificationFeedbackType.Warning);
@@ -68,33 +84,37 @@ export default function RecordScreen() {
 
             if (result) {
               const { sensorCsvPath, gpsCsvPath } = result;
+              setCompletedRideId(result.rideId);
+              setShowFeedbackOptions(true);
               Alert.alert(
-                'Upload your ride?',
-                'Would you like to upload your CSV data now? You can also share or save it.',
+                i18n.t('record.uploadTitle'),
+                i18n.t('record.uploadMessage'),
                 [
                   {
-                    text: 'Later',
+                    text: i18n.t('record.later'),
                     onPress: () => {
-                      askFeedback(result.rideId);
+                      // Don't ask feedback here, let user choose with buttons
                     },
                   },
                   {
-                    text: 'Upload',
+                    text: i18n.t('record.upload'),
                     onPress: async () => {
                       try {
                         const { uploadRide } = await import('../services/uploader');
                         await uploadRide({ sensorCsvPath, gpsCsvPath, metadata: result.metadata });
-                        askFeedback(result.rideId);
+                        // Don't ask feedback here, let user choose with buttons
                       } catch (e: any) {
-                        Alert.alert('Upload failed', e?.message || 'Unknown error');
-                        askFeedback(result.rideId);
+                        Alert.alert(i18n.t('record.uploadFailed'), e?.message || 'Unknown error');
                       }
                     },
                   },
                 ]
               );
             } else {
-              Alert.alert('Stop failed', 'Could not finalize the ride.');
+              Alert.alert(
+                i18n.t('record.stopFailed'), 
+                i18n.t('record.stopFailedMessage')
+              );
             }
           },
         },
@@ -103,13 +123,29 @@ export default function RecordScreen() {
   };
 
   const askFeedback = (rideId: string) => {
+    console.log('Asking for feedback with rideId:', rideId);
     Alert.alert(
-      'Local feedback',
-      'Show a simple, visual-only summary from your collected data on-device?',
+      i18n.t('feedback.localFeedbackTitle'),
+      i18n.t('feedback.localFeedbackMessage'),
       [
-        { text: 'No', onPress: () => router.replace('/vehicle') },
-        { text: 'Yes', onPress: () => router.replace({ pathname: '/feedback', params: { rideId } }) },
-      ]
+        { 
+          text: i18n.t('common.no'), 
+          style: 'cancel',
+          onPress: () => {
+            console.log('User declined feedback, navigating to vehicle');
+            router.replace('/vehicle');
+          }
+        },
+        { 
+          text: i18n.t('common.yes'), 
+          style: 'default',
+          onPress: () => {
+            console.log('User accepted feedback, navigating to feedback screen');
+            router.replace({ pathname: '/feedback', params: { rideId } });
+          }
+        },
+      ],
+      { cancelable: false }
     );
   };
 
@@ -117,16 +153,54 @@ export default function RecordScreen() {
     return (
       <ScrollView style={{ flex: 1, backgroundColor: colors.background }}>
         <View style={[commonStyles.content, { padding: 20 }]}>
-          <Text style={commonStyles.title}>Ready to ride</Text>
+          <Text style={commonStyles.title}>{i18n.t('record.readyTitle')}</Text>
           <Text style={commonStyles.text}>
-            Vehicle: {vehicle}
+            {i18n.t('record.vehicle', { vehicle: vehicle ? getVehicleLabel(vehicle) : 'unknown' })}
           </Text>
           <Text style={[commonStyles.text, { marginTop: 10 }]}>
-            Recording includes accelerometer, gyroscope, magnetometer (continuous), and GPS only while online. Data is
-            stored locally as CSV during the ride. You will choose to upload after stopping.
+            {i18n.t('record.description')}
           </Text>
-          <Button text="Start" onPress={handleStart} style={[buttonStyles.instructionsButton, { marginTop: 20 }]} />
-          <Button text="Back" onPress={() => router.back()} style={[buttonStyles.backButton, { marginTop: 10 }]} />
+          <Button 
+            text={i18n.t('common.start')} 
+            onPress={handleStart} 
+            style={[buttonStyles.instructionsButton, { marginTop: 20 }]} 
+          />
+          <Button 
+            text={i18n.t('common.back')} 
+            onPress={() => router.back()} 
+            style={[buttonStyles.backButton, { marginTop: 10 }]} 
+          />
+          
+          {/* CRIAS Solutions Logo at bottom of page content */}
+          <CRIASLogo />
+        </View>
+      </ScrollView>
+    );
+  }
+
+  if (showFeedbackOptions && completedRideId) {
+    return (
+      <ScrollView style={{ flex: 1, backgroundColor: colors.background }}>
+        <View style={[commonStyles.content, { padding: 20 }]}>
+          <Text style={commonStyles.title}>{i18n.t('record.rideCompleteTitle')}</Text>
+          <Text style={[commonStyles.text, { marginBottom: 20 }]}>
+            {i18n.t('record.rideCompleteMessage')}
+          </Text>
+          
+          <Button
+            text={i18n.t('record.viewStatistics')}
+            onPress={() => {
+              console.log('Navigating to feedback with rideId:', completedRideId);
+              router.replace({ pathname: '/feedback', params: { rideId: completedRideId } });
+            }}
+            style={[buttonStyles.instructionsButton, { marginBottom: 10 }]}
+          />
+          
+          <Button
+            text={i18n.t('record.startNewRide')}
+            onPress={() => router.replace('/vehicle')}
+            style={[buttonStyles.backButton]}
+          />
           
           {/* CRIAS Solutions Logo at bottom of page content */}
           <CRIASLogo />
@@ -138,18 +212,26 @@ export default function RecordScreen() {
   return (
     <View style={[commonStyles.container, { padding: 20 }]}>
       <View style={{ width: '100%', maxWidth: 800, alignItems: 'center', justifyContent: 'center', flex: 1 }}>
-        <Text style={commonStyles.title}>Recording…</Text>
-        <Text style={commonStyles.text}>The UI is minimized to reduce resource usage.</Text>
+        <Text style={commonStyles.title}>{i18n.t('record.recordingTitle')}</Text>
+        <Text style={commonStyles.text}>{i18n.t('record.recordingDescription')}</Text>
         <ActivityIndicator style={{ marginVertical: 20 }} color={colors.accent} />
-        <Button text="Stop" onPress={confirmStop} style={[buttonStyles.instructionsButton, { backgroundColor: '#8e24aa' }]} />
+        <Button 
+          text={i18n.t('common.stop')} 
+          onPress={confirmStop} 
+          style={[buttonStyles.instructionsButton, { backgroundColor: '#8e24aa' }]} 
+        />
         <View style={{ height: 24 }} />
         <SwipeToConfirm
-          text="Swipe to Stop"
+          text={i18n.t('record.swipeToStop')}
           trackColor="#1e2a44"
           thumbColor="#64B5F6"
           onConfirmed={confirmStop}
         />
-        {finishing && <Text style={[commonStyles.text, { marginTop: 10 }]}>Finalizing files…</Text>}
+        {finishing && (
+          <Text style={[commonStyles.text, { marginTop: 10 }]}>
+            {i18n.t('record.finalizingFiles')}
+          </Text>
+        )}
       </View>
     </View>
   );

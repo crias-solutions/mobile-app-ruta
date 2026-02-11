@@ -7,9 +7,14 @@ import { useConsent } from '../hooks/useConsent';
 import { CRIASLogo } from './_layout';
 import Button from '../components/Button';
 import RUTALogo from '../components/RUTALogo';
+import LanguageSwitcher from '../components/LanguageSwitcher';
+import i18n, { useLocale } from '../utils/i18n';
 
 export default function TermsScreen() {
   const { accepted, loading, acceptConsent } = useConsent();
+
+  // Subscribe to locale changes so this screen re-renders when language changes
+  useLocale();
 
   useEffect(() => {
     if (accepted && !loading) {
@@ -20,59 +25,71 @@ export default function TermsScreen() {
   return (
     <ScrollView style={{ flex: 1, backgroundColor: colors.background }}>
       <View style={[commonStyles.content, { padding: 20 }]}>
+        {/* Language Switcher at the top */}
+        <LanguageSwitcher />
+        
         {/* Show RUTA logo only on the terms screen as the main app introduction */}
         <View style={{ alignItems: 'center', paddingVertical: 20 }}>
           <RUTALogo size="large" />
-          <Text style={[commonStyles.title, { marginTop: 10, textAlign: 'center' }]}>RUTA Mobile</Text>
+          <Text style={[commonStyles.title, { marginTop: 10, textAlign: 'center' }]}>
+            {i18n.t('terms.appTitle')}
+          </Text>
           <Text style={[commonStyles.text, { textAlign: 'center', opacity: 0.8 }]}>
-            Citizen Science Traffic Data Collection
+            {i18n.t('terms.appSubtitle')}
           </Text>
         </View>
         
-        <Text style={[commonStyles.title, { marginTop: 20 }]}>Terms and Conditions</Text>
+        <Text style={[commonStyles.title, { marginTop: 20 }]}>
+          {i18n.t('terms.title')}
+        </Text>
         
         <View style={commonStyles.card}>
-          <Text style={commonStyles.subtitle}>Citizen Science Project</Text>
+          <Text style={commonStyles.subtitle}>
+            {i18n.t('terms.citizenScience.title')}
+          </Text>
           <Text style={commonStyles.text}>
-            This app is part of an open-source, open-data, open-science Citizen Science participatory sensing project 
-            for collecting anonymized traffic trajectory data.
+            {i18n.t('terms.citizenScience.description')}
           </Text>
         </View>
 
         <View style={commonStyles.card}>
-          <Text style={commonStyles.subtitle}>Data Collection</Text>
+          <Text style={commonStyles.subtitle}>
+            {i18n.t('terms.dataCollection.title')}
+          </Text>
           <Text style={commonStyles.text}>
-            We collect sensor data (accelerometer, gyroscope, magnetometer) continuously and GPS data when online. 
-            All data is stored locally on your device and only uploaded with your explicit consent.
+            {i18n.t('terms.dataCollection.description')}
           </Text>
         </View>
 
         <View style={commonStyles.card}>
-          <Text style={commonStyles.subtitle}>Privacy & Anonymity</Text>
+          <Text style={commonStyles.subtitle}>
+            {i18n.t('terms.privacy.title')}
+          </Text>
           <Text style={commonStyles.text}>
-            No personal identifiers are collected. All data is completely anonymous and cannot be traced back to you. 
-            No authentication or login is required.
+            {i18n.t('terms.privacy.description')}
           </Text>
         </View>
 
         <View style={commonStyles.card}>
-          <Text style={commonStyles.subtitle}>Open Data Philosophy</Text>
+          <Text style={commonStyles.subtitle}>
+            {i18n.t('terms.openData.title')}
+          </Text>
           <Text style={commonStyles.text}>
-            Collected data will be made available following FAIR (Findable, Accessible, Interoperable, Reusable) 
-            principles for scientific research and public benefit.
+            {i18n.t('terms.openData.description')}
           </Text>
         </View>
 
         <View style={commonStyles.card}>
-          <Text style={commonStyles.subtitle}>Your Rights</Text>
+          <Text style={commonStyles.subtitle}>
+            {i18n.t('terms.rights.title')}
+          </Text>
           <Text style={commonStyles.text}>
-            You can stop data collection at any time. You choose whether to upload your data after each ride. 
-            You can delete local data from your device at any time.
+            {i18n.t('terms.rights.description')}
           </Text>
         </View>
 
         <Button
-          text="I Accept and Continue"
+          text={i18n.t('terms.acceptButton')}
           onPress={acceptConsent}
           style={[buttonStyles.instructionsButton, { marginTop: 20 }]}
         />

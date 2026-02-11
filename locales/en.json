@@ -1,0 +1,111 @@
+
+{
+  "common": {
+    "back": "Back",
+    "continue": "Continue",
+    "accept": "Accept",
+    "cancel": "Cancel",
+    "yes": "Yes",
+    "no": "No",
+    "ok": "OK",
+    "done": "Done",
+    "start": "Start",
+    "stop": "Stop",
+    "loading": "Loading…",
+    "poweredBy": "Powered by CRIAS Solutions"
+  },
+  "terms": {
+    "title": "Terms and Conditions",
+    "appTitle": "RUTA Mobile",
+    "appSubtitle": "Citizen Science Traffic Data Collection",
+    "citizenScience": {
+      "title": "Citizen Science Project",
+      "description": "This app is part of an open-source, open-data, open-science Citizen Science participatory sensing project for collecting anonymized traffic trajectory data."
+    },
+    "dataCollection": {
+      "title": "Data Collection",
+      "description": "We collect sensor data (accelerometer, gyroscope, magnetometer) continuously and GPS data when online. All data is stored locally on your device and only uploaded with your explicit consent."
+    },
+    "privacy": {
+      "title": "Privacy & Anonymity",
+      "description": "No personal identifiers are collected. All data is completely anonymous and cannot be traced back to you. No authentication or login is required."
+    },
+    "openData": {
+      "title": "Open Data Philosophy",
+      "description": "Collected data will be made available following FAIR (Findable, Accessible, Interoperable, Reusable) principles for scientific research and public benefit."
+    },
+    "rights": {
+      "title": "Your Rights",
+      "description": "You can stop data collection at any time. You choose whether to upload your data after each ride. You can delete local data from your device at any time."
+    },
+    "acceptButton": "I Accept and Continue"
+  },
+  "vehicle": {
+    "title": "Select your vehicle",
+    "description": "Choose a mode of transport below. You can edit the list by tapping the settings icon.",
+    "lowStorage": "Low storage: {freeMB} MB available. Recording may stop if storage runs out.",
+    "quickStart": "Quick start with {vehicle}",
+    "manageTitle": "Manage vehicle list",
+    "manageDescription": "Toggle which vehicle types are visible on the selection screen.",
+    "vehicles": {
+      "car": "Car",
+      "bicycle": "Bicycle",
+      "scooter": "Scooter",
+      "motorbike": "Motorbike",
+      "walk": "Walking",
+      "bus": "Bus",
+      "tram": "Tram",
+      "subway": "Subway",
+      "train": "Train",
+      "ferry": "Ferry"
+    }
+  },
+  "record": {
+    "readyTitle": "Ready to ride",
+    "vehicle": "Vehicle: {vehicle}",
+    "description": "Recording includes accelerometer, gyroscope, magnetometer (continuous), and GPS only while online. Data is stored locally as CSV during the ride. You will choose to upload after stopping.",
+    "recordingTitle": "Recording…",
+    "recordingDescription": "The UI is minimized to reduce resource usage.",
+    "swipeToStop": "Swipe to Stop",
+    "stopConfirmTitle": "Stop recording?",
+    "stopConfirmMessage": "Are you sure you want to stop?",
+    "uploadTitle": "Upload your ride?",
+    "uploadMessage": "Would you like to upload your CSV data now? You can also share or save it.",
+    "later": "Later",
+    "upload": "Upload",
+    "stopFailed": "Stop failed",
+    "stopFailedMessage": "Could not finalize the ride.",
+    "uploadFailed": "Upload failed",
+    "cannotStart": "Cannot start",
+    "notReady": "Sensors or storage are not available. Please try again.",
+    "failedToStart": "Failed to start",
+    "failedToStartMessage": "An error occurred while starting recording.",
+    "vehicleMissing": "Vehicle missing",
+    "vehicleMissingMessage": "Please select a vehicle first.",
+    "finalizingFiles": "Finalizing files…",
+    "rideCompleteTitle": "Ride Complete!",
+    "rideCompleteMessage": "Your ride data has been saved locally. Would you like to see a summary of your ride?",
+    "viewStatistics": "View Statistics",
+    "startNewRide": "Start New Ride"
+  },
+  "feedback": {
+    "title": "Ride Summary",
+    "description": "Here's a simple analysis of your ride data processed locally on your device.",
+    "statisticsTitle": "Statistics",
+    "loadingStats": "Loading statistics...",
+    "noData": "No ride data available for analysis.",
+    "disclaimer": "This analysis is performed entirely on your device. No data is sent anywhere for this summary.",
+    "stats": {
+      "duration": "Ride Duration",
+      "dataPoints": "Data Points",
+      "avgAcceleration": "Avg Acceleration",
+      "maxAcceleration": "Max Acceleration"
+    },
+    "units": {
+      "seconds": " sec",
+      "metersPerSecondSquared": " m/s²"
+    },
+    "localFeedbackTitle": "Local feedback",
+    "localFeedbackMessage": "Show a simple, visual-only summary from your collected data on-device?"
+  }
+}

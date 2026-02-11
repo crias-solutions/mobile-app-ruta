@@ -1,0 +1,111 @@
+
+{
+  "common": {
+    "back": "Atrás",
+    "continue": "Continuar",
+    "accept": "Aceptar",
+    "cancel": "Cancelar",
+    "yes": "Sí",
+    "no": "No",
+    "ok": "OK",
+    "done": "Hecho",
+    "start": "Iniciar",
+    "stop": "Detener",
+    "loading": "Cargando…",
+    "poweredBy": "Desarrollado por CRIAS Solutions"
+  },
+  "terms": {
+    "title": "Términos y Condiciones",
+    "appTitle": "RUTA Mobile",
+    "appSubtitle": "Recolección de Datos de Tráfico - Ciencia Ciudadana",
+    "citizenScience": {
+      "title": "Proyecto de Ciencia Ciudadana",
+      "description": "Esta aplicación es parte de un proyecto de código abierto, datos abiertos y ciencia abierta de Ciencia Ciudadana para la recolección de datos anónimos de trayectorias de tráfico mediante sensores participativos."
+    },
+    "dataCollection": {
+      "title": "Recolección de Datos",
+      "description": "Recolectamos datos de sensores (acelerómetro, giroscopio, magnetómetro) de forma continua y datos GPS cuando estás en línea. Todos los datos se almacenan localmente en tu dispositivo y solo se suben con tu consentimiento explícito."
+    },
+    "privacy": {
+      "title": "Privacidad y Anonimato",
+      "description": "No se recolectan identificadores personales. Todos los datos son completamente anónimos y no pueden rastrearse hasta ti. No se requiere autenticación ni inicio de sesión."
+    },
+    "openData": {
+      "title": "Filosofía de Datos Abiertos",
+      "description": "Los datos recolectados estarán disponibles siguiendo los principios FAIR (Encontrable, Accesible, Interoperable, Reutilizable) para investigación científica y beneficio público."
+    },
+    "rights": {
+      "title": "Tus Derechos",
+      "description": "Puedes detener la recolección de datos en cualquier momento. Tú eliges si subir tus datos después de cada viaje. Puedes eliminar los datos locales de tu dispositivo en cualquier momento."
+    },
+    "acceptButton": "Acepto y Continuar"
+  },
+  "vehicle": {
+    "title": "Selecciona tu vehículo",
+    "description": "Elige un modo de transporte a continuación. Puedes editar la lista tocando el ícono de configuración.",
+    "lowStorage": "Almacenamiento bajo: {freeMB} MB disponibles. La grabación puede detenerse si se agota el almacenamiento.",
+    "quickStart": "Inicio rápido con {vehicle}",
+    "manageTitle": "Administrar lista de vehículos",
+    "manageDescription": "Activa o desactiva qué tipos de vehículos son visibles en la pantalla de selección.",
+    "vehicles": {
+      "car": "Auto",
+      "bicycle": "Bicicleta",
+      "scooter": "Scooter",
+      "motorbike": "Motocicleta",
+      "walk": "Caminando",
+      "bus": "Autobús",
+      "tram": "Tranvía",
+      "subway": "Metro",
+      "train": "Tren",
+      "ferry": "Ferry"
+    }
+  },
+  "record": {
+    "readyTitle": "Listo para viajar",
+    "vehicle": "Vehículo: {vehicle}",
+    "description": "La grabación incluye acelerómetro, giroscopio, magnetómetro (continuo) y GPS solo cuando estás en línea. Los datos se almacenan localmente como CSV durante el viaje. Elegirás subirlos después de detener.",
+    "recordingTitle": "Grabando…",
+    "recordingDescription": "La interfaz está minimizada para reducir el uso de recursos.",
+    "swipeToStop": "Desliza para Detener",
+    "stopConfirmTitle": "¿Detener grabación?",
+    "stopConfirmMessage": "¿Estás seguro de que quieres detener?",
+    "uploadTitle": "¿Subir tu viaje?",
+    "uploadMessage": "¿Te gustaría subir tus datos CSV ahora? También puedes compartirlos o guardarlos.",
+    "later": "Más tarde",
+    "upload": "Subir",
+    "stopFailed": "Error al detener",
+    "stopFailedMessage": "No se pudo finalizar el viaje.",
+    "uploadFailed": "Error al subir",
+    "cannotStart": "No se puede iniciar",
+    "notReady": "Los sensores o el almacenamiento no están disponibles. Por favor, inténtalo de nuevo.",
+    "failedToStart": "Error al iniciar",
+    "failedToStartMessage": "Ocurrió un error al iniciar la grabación.",
+    "vehicleMissing": "Vehículo faltante",
+    "vehicleMissingMessage": "Por favor, selecciona un vehículo primero.",
+    "finalizingFiles": "Finalizando archivos…",
+    "rideCompleteTitle": "¡Viaje Completado!",
+    "rideCompleteMessage": "Los datos de tu viaje se han guardado localmente. ¿Te gustaría ver un resumen de tu viaje?",
+    "viewStatistics": "Ver Estadísticas",
+    "startNewRide": "Iniciar Nuevo Viaje"
+  },
+  "feedback": {
+    "title": "Resumen del Viaje",
+    "description": "Aquí hay un análisis simple de los datos de tu viaje procesados localmente en tu dispositivo.",
+    "statisticsTitle": "Estadísticas",
+    "loadingStats": "Cargando estadísticas...",
+    "noData": "No hay datos de viaje disponibles para análisis.",
+    "disclaimer": "Este análisis se realiza completamente en tu dispositivo. No se envían datos a ningún lugar para este resumen.",
+    "stats": {
+      "duration": "Duración del Viaje",
+      "dataPoints": "Puntos de Datos",
+      "avgAcceleration": "Aceleración Promedio",
+      "maxAcceleration": "Aceleración Máxima"
+    },
+    "units": {
+      "seconds": " seg",
+      "metersPerSecondSquared": " m/s²"
+    },
+    "localFeedbackTitle": "Retroalimentación local",
+    "localFeedbackMessage": "¿Mostrar un resumen visual simple de tus datos recolectados en el dispositivo?"
+  }
+}

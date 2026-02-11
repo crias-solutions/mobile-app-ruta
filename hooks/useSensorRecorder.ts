@@ -1,6 +1,6 @@
 
 import { useEffect, useMemo, useRef, useState } from 'react';
-import * as FileSystem from 'expo-file-system';
+import * as FileSystem from 'expo-file-system/legacy';
 import * as Network from 'expo-network';
 import * as Location from 'expo-location';
 import { Accelerometer, Gyroscope, Magnetometer } from 'expo-sensors';

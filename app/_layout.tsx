@@ -8,7 +8,9 @@ import { Platform, SafeAreaView, Text, View, Image, StyleSheet, TouchableOpacity
 import { commonStyles, colors } from '../styles/commonStyles';
 import { useEffect, useState } from 'react';
 import { setupErrorLogging } from '../utils/errorLogger';
+import { getCurrentLanguage, onLocaleChange } from '../utils/i18n';
 import { useFonts, Inter_400Regular, Inter_600SemiBold, Inter_700Bold } from '@expo-google-fonts/inter';
+import i18n from '../utils/i18n';
 
 const STORAGE_KEY = 'emulated_device';
 const CRIAS_WEBSITE_URL = 'https://crias.solutions/';
@@ -44,6 +46,8 @@ function RootLayoutInner() {
     Inter_700Bold,
   });
 
+  const [, setLocaleState] = useState(getCurrentLanguage());
+
   useEffect(() => {
     setupErrorLogging();
 
@@ -59,6 +63,12 @@ function RootLayoutInner() {
       }
     }
   }, [emulate]);
+
+  // Subscribe to locale changes so the whole root rerenders and i18n.t() calls update
+  useEffect(() => {
+    const unsubscribe = onLocaleChange(() => setLocaleState(getCurrentLanguage()));
+    return unsubscribe;
+  }, []);
 
   let insetsToUse = actualInsets;
 
@@ -77,7 +87,7 @@ function RootLayoutInner() {
   if (!fontsLoaded) {
     return (
       <SafeAreaView style={[commonStyles.wrapper, { justifyContent: 'center', alignItems: 'center' }]}>
-        <Text style={{ color: colors.text }}>Loading…</Text>
+        <Text style={{ color: colors.text }}>{i18n.t('common.loading')}</Text>
       </SafeAreaView>
     );
   }
@@ -122,7 +132,7 @@ export function CRIASLogo() {
         source={require('../assets/images/9f64f69f-0483-49b4-9307-b50b0fa3edac.png')} 
         style={styles.logo}
       />
-      <Text style={styles.logoText}>Powered by CRIAS Solutions</Text>
+      <Text style={styles.logoText}>{i18n.t('common.poweredBy')}</Text>
     </TouchableOpacity>
   );
 }
