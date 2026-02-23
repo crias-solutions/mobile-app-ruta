@@ -12,7 +12,8 @@
     "start": "Start",
     "stop": "Stop",
     "loading": "Loading…",
-    "poweredBy": "Powered by CRIAS Solutions"
+    "poweredBy": "Powered by CRIAS Solutions",
+    "info": "Info"
   },
   "terms": {
     "title": "Terms and Conditions",
@@ -24,7 +25,7 @@
     },
     "dataCollection": {
       "title": "Data Collection",
-      "description": "We collect sensor data (accelerometer, gyroscope, magnetometer) continuously and GPS data when online. All data is stored locally on your device and only uploaded with your explicit consent."
+      "description": "We collect sensor data (accelerometer, gyroscope, magnetometer) continuously and GPS data (even offline). All data is stored locally on your device and only uploaded with your explicit consent."
     },
     "privacy": {
       "title": "Privacy & Anonymity",
@@ -63,7 +64,7 @@
   "record": {
     "readyTitle": "Ready to ride",
     "vehicle": "Vehicle: {vehicle}",
-    "description": "Recording includes accelerometer, gyroscope, magnetometer (continuous), and GPS only while online. Data is stored locally as CSV during the ride. You will choose to upload after stopping.",
+    "description": "Recording includes accelerometer, gyroscope, magnetometer (continuous), and GPS data (even offline). Data is stored locally as CSV during the ride. You will choose to upload after stopping.",
     "recordingTitle": "Recording…",
     "recordingDescription": "The UI is minimized to reduce resource usage.",
     "swipeToStop": "Swipe to Stop",
@@ -86,7 +87,8 @@
     "rideCompleteTitle": "Ride Complete!",
     "rideCompleteMessage": "Your ride data has been saved locally. Would you like to see a summary of your ride?",
     "viewStatistics": "View Statistics",
-    "startNewRide": "Start New Ride"
+    "startNewRide": "Start New Ride",
+    "gpsOfflineNote": "GPS will work even when offline"
   },
   "feedback": {
     "title": "Ride Summary",

@@ -147,14 +147,9 @@ export function useSensorRecorder(vehicle: string) {
       // Keep references by using closure to stop when needed
       (sensorIntervalRef as any).current = { accelSub, gyroSub, magSub };
 
-      // Start GPS only when online, and watch network to toggle
+      // Start GPS
       const startGps = async () => {
         try {
-          const online = await isOnline();
-          if (!online) {
-            await stopGps();
-            return;
-          }
           const { status } = await Location.requestForegroundPermissionsAsync();
           if (status !== 'granted') {
             console.log('Location permission denied, GPS will be skipped while recording.');
@@ -190,17 +185,6 @@ export function useSensorRecorder(vehicle: string) {
           console.log('stopGps error', e);
         }
       };
-
-      // Start or stop GPS based on network connectivity
-      const sub = Network.addNetworkStateListener(async (state) => {
-        const online = !!(state.isConnected && state.isInternetReachable !== false);
-        if (online) {
-          await startGps();
-        } else {
-          await stopGps();
-        }
-      });
-      networkUnsubRef.current = () => sub.remove();
 
       // Kick off initial GPS state:
       await startGps();

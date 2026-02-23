@@ -12,7 +12,8 @@
     "start": "Iniciar",
     "stop": "Detener",
     "loading": "Cargando…",
-    "poweredBy": "Desarrollado por CRIAS Solutions"
+    "poweredBy": "Desarrollado por CRIAS Solutions",
+    "info": "Información"
   },
   "terms": {
     "title": "Términos y Condiciones",
@@ -24,7 +25,7 @@
     },
     "dataCollection": {
       "title": "Recolección de Datos",
-      "description": "Recolectamos datos de sensores (acelerómetro, giroscopio, magnetómetro) de forma continua y datos GPS cuando estás en línea. Todos los datos se almacenan localmente en tu dispositivo y solo se suben con tu consentimiento explícito."
+      "description": "Recolectamos datos de sensores (acelerómetro, giroscopio, magnetómetro) de forma continua y datos GPS (incluso sin conexión). Todos los datos se almacenan localmente en tu dispositivo y solo se suben con tu consentimiento explícito."
     },
     "privacy": {
       "title": "Privacidad y Anonimato",
@@ -63,7 +64,7 @@
   "record": {
     "readyTitle": "Listo para viajar",
     "vehicle": "Vehículo: {vehicle}",
-    "description": "La grabación incluye acelerómetro, giroscopio, magnetómetro (continuo) y GPS solo cuando estás en línea. Los datos se almacenan localmente como CSV durante el viaje. Elegirás subirlos después de detener.",
+    "description": "La grabación incluye acelerómetro, giroscopio, magnetómetro (continuo) y datos GPS (incluso sin conexión). Los datos se almacenan localmente como CSV durante el viaje. Elegirás subirlos después de detener.",
     "recordingTitle": "Grabando…",
     "recordingDescription": "La interfaz está minimizada para reducir el uso de recursos.",
     "swipeToStop": "Desliza para Detener",
@@ -86,7 +87,8 @@
     "rideCompleteTitle": "¡Viaje Completado!",
     "rideCompleteMessage": "Los datos de tu viaje se han guardado localmente. ¿Te gustaría ver un resumen de tu viaje?",
     "viewStatistics": "Ver Estadísticas",
-    "startNewRide": "Iniciar Nuevo Viaje"
+    "startNewRide": "Iniciar Nuevo Viaje",
+    "gpsOfflineNote": "El GPS funcionará incluso sin conexión"
   },
   "feedback": {
     "title": "Resumen del Viaje",
