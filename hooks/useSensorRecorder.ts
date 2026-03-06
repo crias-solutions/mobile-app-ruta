@@ -4,7 +4,7 @@ import * as FileSystem from 'expo-file-system/legacy';
 import * as Network from 'expo-network';
 import * as Location from 'expo-location';
 import { Accelerometer, Gyroscope, Magnetometer } from 'expo-sensors';
-import { Platform } from 'react-native';
+import { Platform, AppState, AppStateStatus } from 'react-native';
 import { getFreeStorageMB } from '../utils/storage';
 
 type SensorSample = {
@@ -45,6 +45,52 @@ export function useSensorRecorder(vehicle: string) {
   const sensorCsvPathRef = useRef<string>('');
   const gpsCsvPathRef = useRef<string>('');
   const flushTimerRef = useRef<NodeJS.Timer | null>(null);
+  const appStateSubRef = useRef<(() => void) | null>(null);
+  const isRecordingRef = useRef<boolean>(false);
+
+  const startGps = async () => {
+    try {
+      const { status } = await Location.requestForegroundPermissionsAsync();
+      if (status !== 'granted') {
+        console.log('Location permission denied, GPS will be skipped while recording.');
+        return;
+      }
+      if (Platform.OS === 'ios') {
+        const bgResponse = await Location.requestBackgroundPermissionsAsync();
+        if (bgResponse.status !== 'granted') {
+          console.log('Background location permission not granted, GPS may stop when app is backgrounded.');
+        }
+      }
+      if (locationSubRef.current) return;
+      locationSubRef.current = await Location.watchPositionAsync(
+        { accuracy: Location.Accuracy.Balanced, timeInterval: 1000, distanceInterval: 1 },
+        (loc) => {
+          const c = loc.coords;
+          gpsDataRef.current.push({
+            t: Date.now(),
+            latitude: c.latitude,
+            longitude: c.longitude,
+            accuracy: c.accuracy,
+            altitude: c.altitude,
+            speed: c.speed,
+          });
+        }
+      );
+    } catch (e) {
+      console.log('startGps error', e);
+    }
+  };
+
+  const stopGps = async () => {
+    try {
+      if (locationSubRef.current) {
+        locationSubRef.current.remove();
+        locationSubRef.current = null;
+      }
+    } catch (e) {
+      console.log('stopGps error', e);
+    }
+  };
 
   useEffect(() => {
     (async () => {
@@ -70,6 +116,22 @@ export function useSensorRecorder(vehicle: string) {
       stopAll();
     };
     // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, []);
+
+  useEffect(() => {
+    const handleAppStateChange = (nextAppState: AppStateStatus) => {
+      if (nextAppState === 'active' && isRecordingRef.current && !locationSubRef.current) {
+        console.log('App came to foreground, resuming GPS tracking...');
+        startGps();
+      }
+    };
+
+    const subscription = AppState.addEventListener('change', handleAppStateChange);
+    appStateSubRef.current = () => subscription.remove();
+
+    return () => {
+      subscription.remove();
+    };
   }, []);
 
   const isOnline = async () => {
@@ -147,45 +209,6 @@ export function useSensorRecorder(vehicle: string) {
       // Keep references by using closure to stop when needed
       (sensorIntervalRef as any).current = { accelSub, gyroSub, magSub };
 
-      // Start GPS
-      const startGps = async () => {
-        try {
-          const { status } = await Location.requestForegroundPermissionsAsync();
-          if (status !== 'granted') {
-            console.log('Location permission denied, GPS will be skipped while recording.');
-            return;
-          }
-          if (locationSubRef.current) return;
-          locationSubRef.current = await Location.watchPositionAsync(
-            { accuracy: Location.Accuracy.Balanced, timeInterval: 1000, distanceInterval: 1 },
-            (loc) => {
-              const c = loc.coords;
-              gpsDataRef.current.push({
-                t: Date.now(),
-                latitude: c.latitude,
-                longitude: c.longitude,
-                accuracy: c.accuracy,
-                altitude: c.altitude,
-                speed: c.speed,
-              });
-            }
-          );
-        } catch (e) {
-          console.log('startGps error', e);
-        }
-      };
-
-      const stopGps = async () => {
-        try {
-          if (locationSubRef.current) {
-            locationSubRef.current.remove();
-            locationSubRef.current = null;
-          }
-        } catch (e) {
-          console.log('stopGps error', e);
-        }
-      };
-
       // Kick off initial GPS state:
       await startGps();
 
@@ -196,6 +219,7 @@ export function useSensorRecorder(vehicle: string) {
       // Periodic snapshot flushing to persist progress
       flushTimerRef.current = setInterval(writeCsvSnapshot, 5000) as any;
 
+      isRecordingRef.current = true;
       setIsRecording(true);
       return true;
     } catch (e: any) {
@@ -249,6 +273,7 @@ export function useSensorRecorder(vehicle: string) {
         clearInterval(flushTimerRef.current as any);
         flushTimerRef.current = null;
       }
+      isRecordingRef.current = false;
     } catch (e) {
       console.log('stopAll error', e);
     }
