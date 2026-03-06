@@ -3,9 +3,41 @@ import { useEffect, useMemo, useRef, useState } from 'react';
 import * as FileSystem from 'expo-file-system/legacy';
 import * as Network from 'expo-network';
 import * as Location from 'expo-location';
+import * as TaskManager from 'expo-task-manager';
+import AsyncStorage from '@react-native-async-storage/async-storage';
 import { Accelerometer, Gyroscope, Magnetometer } from 'expo-sensors';
 import { Platform, AppState, AppStateStatus } from 'react-native';
 import { getFreeStorageMB } from '../utils/storage';
+
+const BACKGROUND_LOCATION_TASK = 'background-location-task';
+const GPS_STORAGE_KEY = 'gps_background_data';
+
+TaskManager.defineTask(BACKGROUND_LOCATION_TASK, async ({ data, error }) => {
+  if (error) {
+    console.log('Background location task error:', error);
+    return;
+  }
+  if (data) {
+    const { locations } = data as { locations: Location.LocationObject[] };
+    if (locations && locations.length > 0) {
+      try {
+        const existingData = await AsyncStorage.getItem(GPS_STORAGE_KEY);
+        const existingGps: GpsSample[] = existingData ? JSON.parse(existingData) : [];
+        const newGps: GpsSample[] = locations.map((loc) => ({
+          t: loc.timestamp,
+          latitude: loc.coords.latitude,
+          longitude: loc.coords.longitude,
+          accuracy: loc.coords.accuracy,
+          altitude: loc.coords.altitude,
+          speed: loc.coords.speed,
+        }));
+        await AsyncStorage.setItem(GPS_STORAGE_KEY, JSON.stringify([...existingGps, ...newGps]));
+      } catch (e) {
+        console.log('Error storing background GPS:', e);
+      }
+    }
+  }
+});
 
 type SensorSample = {
   t: number; // timestamp ms
@@ -55,12 +87,32 @@ export function useSensorRecorder(vehicle: string) {
         console.log('Location permission denied, GPS will be skipped while recording.');
         return;
       }
-      if (Platform.OS === 'ios') {
-        const bgResponse = await Location.requestBackgroundPermissionsAsync();
-        if (bgResponse.status !== 'granted') {
-          console.log('Background location permission not granted, GPS may stop when app is backgrounded.');
+      
+      await AsyncStorage.removeItem(GPS_STORAGE_KEY);
+      
+      const bgStatus = await Location.requestBackgroundPermissionsAsync();
+      if (bgStatus.status !== 'granted') {
+        console.log('Background location permission not granted, GPS will stop when app is backgrounded.');
+      } else {
+        try {
+          await Location.startLocationUpdatesAsync(BACKGROUND_LOCATION_TASK, {
+            accuracy: Location.Accuracy.Balanced,
+            timeInterval: 1000,
+            distanceInterval: 1,
+            foregroundService: {
+              notificationTitle: 'RUTA Recording',
+              notificationBody: 'Recording your trip in the background',
+              notificationColor: '#1A1A2E',
+            },
+            pausesUpdatesAutomatically: false,
+            showsBackgroundLocationIndicator: true,
+          });
+          console.log('Background location updates started');
+        } catch (bgError) {
+          console.log('Failed to start background location updates:', bgError);
         }
       }
+      
       if (locationSubRef.current) return;
       locationSubRef.current = await Location.watchPositionAsync(
         { accuracy: Location.Accuracy.Balanced, timeInterval: 1000, distanceInterval: 1 },
@@ -86,6 +138,15 @@ export function useSensorRecorder(vehicle: string) {
       if (locationSubRef.current) {
         locationSubRef.current.remove();
         locationSubRef.current = null;
+      }
+      try {
+        const isRunning = await TaskManager.isTaskRegisteredAsync(BACKGROUND_LOCATION_TASK);
+        if (isRunning) {
+          await Location.stopLocationUpdatesAsync(BACKGROUND_LOCATION_TASK);
+          console.log('Background location updates stopped');
+        }
+      } catch (e) {
+        console.log('Error stopping background location:', e);
       }
     } catch (e) {
       console.log('stopGps error', e);
@@ -260,6 +321,15 @@ export function useSensorRecorder(vehicle: string) {
         }
         locationSubRef.current = null;
       }
+      try {
+        const isRunning = await TaskManager.isTaskRegisteredAsync(BACKGROUND_LOCATION_TASK);
+        if (isRunning) {
+          await Location.stopLocationUpdatesAsync(BACKGROUND_LOCATION_TASK);
+          console.log('Background location updates stopped in stopAll');
+        }
+      } catch (e) {
+        console.log('stopAll background location error:', e);
+      }
       // Stop network watcher
       if (networkUnsubRef.current) {
         try {
@@ -282,6 +352,30 @@ export function useSensorRecorder(vehicle: string) {
   const stopRecording = async (): Promise<RecorderResult | null> => {
     try {
       await stopAll();
+      
+      try {
+        const bgGpsData = await AsyncStorage.getItem(GPS_STORAGE_KEY);
+        if (bgGpsData) {
+          const bgGps: GpsSample[] = JSON.parse(bgGpsData);
+          const existingGps = gpsDataRef.current;
+          const mergedGps = [...existingGps];
+          for (const sample of bgGps) {
+            const isDuplicate = existingGps.some(
+              (existing) => 
+                Math.abs(existing.latitude - sample.latitude) < 0.0001 && 
+                Math.abs(existing.longitude - sample.longitude) < 0.0001
+            );
+            if (!isDuplicate) {
+              mergedGps.push(sample);
+            }
+          }
+          gpsDataRef.current = mergedGps;
+          console.log(`Merged ${bgGps.length} background GPS points, ${mergedGps.length} total`);
+        }
+      } catch (e) {
+        console.log('Error reading background GPS data:', e);
+      }
+      
       await writeCsvSnapshot();
 
       const rideId = rideIdRef.current!;
