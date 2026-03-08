@@ -86,7 +86,9 @@
     "rideCompleteTitle": "¡Viaje Completado!",
     "rideCompleteMessage": "Los datos de tu viaje se han guardado localmente. ¿Te gustaría ver un resumen de tu viaje?",
     "viewStatistics": "Ver Estadísticas",
-    "startNewRide": "Iniciar Nuevo Viaje"
+    "startNewRide": "Iniciar Nuevo Viaje",
+    "backgroundGps": "GPS en segundo plano",
+    "backgroundGpsDescription": "Mantener rastreo GPS cuando la app está en segundo plano"
   },
   "feedback": {
     "title": "Resumen del Viaje",

@@ -6,6 +6,7 @@ import * as Location from 'expo-location';
 import { Accelerometer, Gyroscope, Magnetometer } from 'expo-sensors';
 import { Platform } from 'react-native';
 import { getFreeStorageMB } from '../utils/storage';
+import { backgroundGpsManager, GpsSample } from '../utils/backgroundGps';
 
 type SensorSample = {
   t: number; // timestamp ms
@@ -15,15 +16,6 @@ type SensorSample = {
   z: number;
 };
 
-type GpsSample = {
-  t: number;
-  latitude: number;
-  longitude: number;
-  accuracy?: number | null;
-  altitude?: number | null;
-  speed?: number | null;
-};
-
 type RecorderResult = {
   rideId: string;
   sensorCsvPath: string;
@@ -31,7 +23,7 @@ type RecorderResult = {
   metadata: Record<string, any>;
 };
 
-export function useSensorRecorder(vehicle: string) {
+export function useSensorRecorder(vehicle: string, enableBackgroundGps: boolean = false) {
   const [isRecording, setIsRecording] = useState(false);
   const [canRecord, setCanRecord] = useState(false);
   const [error, setError] = useState<string | null>(null);
@@ -45,6 +37,7 @@ export function useSensorRecorder(vehicle: string) {
   const sensorCsvPathRef = useRef<string>('');
   const gpsCsvPathRef = useRef<string>('');
   const flushTimerRef = useRef<NodeJS.Timer | null>(null);
+  const backgroundGpsEnabledRef = useRef<boolean>(false);
 
   useEffect(() => {
     (async () => {
@@ -55,10 +48,7 @@ export function useSensorRecorder(vehicle: string) {
           setCanRecord(false);
           return;
         }
-        // Permissions
         const { status: motionStatus } = await Location.getForegroundPermissionsAsync();
-        // We'll request location on start conditionally; not here.
-        // Sensors don't need explicit permission on iOS/Android in Expo.
         setCanRecord(true);
       } catch (e) {
         console.log('init check error', e);
@@ -125,11 +115,10 @@ export function useSensorRecorder(vehicle: string) {
       sensorCsvPathRef.current = `${dir}/sensor.csv`;
       gpsCsvPathRef.current = `${dir}/gps.csv`;
 
-      // Initialize buffers
       sensorDataRef.current = [];
       gpsDataRef.current = [];
+      backgroundGpsEnabledRef.current = enableBackgroundGps;
 
-      // Start sensors
       Accelerometer.setUpdateInterval(100);
       Gyroscope.setUpdateInterval(100);
       Magnetometer.setUpdateInterval(100);
@@ -144,10 +133,8 @@ export function useSensorRecorder(vehicle: string) {
         sensorDataRef.current.push({ t: Date.now(), type: 'magnetometer', x, y, z });
       });
 
-      // Keep references by using closure to stop when needed
       (sensorIntervalRef as any).current = { accelSub, gyroSub, magSub };
 
-      // Start GPS only when online, and watch network to toggle
       const startGps = async () => {
         try {
           const online = await isOnline();
@@ -175,6 +162,16 @@ export function useSensorRecorder(vehicle: string) {
               });
             }
           );
+
+          if (enableBackgroundGps) {
+            console.log('[useSensorRecorder] Starting background GPS tracking...');
+            const bgResult = await backgroundGpsManager.startBackgroundTracking();
+            if (bgResult.success) {
+              console.log('[useSensorRecorder] Background GPS started successfully');
+            } else {
+              console.log('[useSensorRecorder] Background GPS failed to start, continuing with foreground only');
+            }
+          }
         } catch (e) {
           console.log('startGps error', e);
         }
@@ -191,7 +188,6 @@ export function useSensorRecorder(vehicle: string) {
         }
       };
 
-      // Start or stop GPS based on network connectivity
       const sub = Network.addNetworkStateListener(async (state) => {
         const online = !!(state.isConnected && state.isInternetReachable !== false);
         if (online) {
@@ -202,14 +198,11 @@ export function useSensorRecorder(vehicle: string) {
       });
       networkUnsubRef.current = () => sub.remove();
 
-      // Kick off initial GPS state:
       await startGps();
 
-      // Initial CSV headers
       await FileSystem.writeAsStringAsync(sensorCsvPathRef.current, 'timestamp_ms,sensor,x,y,z');
       await FileSystem.writeAsStringAsync(gpsCsvPathRef.current, 'timestamp_ms,latitude,longitude,accuracy,altitude,speed');
 
-      // Periodic snapshot flushing to persist progress
       flushTimerRef.current = setInterval(writeCsvSnapshot, 5000) as any;
 
       setIsRecording(true);
@@ -223,7 +216,6 @@ export function useSensorRecorder(vehicle: string) {
 
   const stopAll = async () => {
     try {
-      // Stop sensors
       const subs: any = (sensorIntervalRef as any).current;
       if (subs) {
         try {
@@ -243,7 +235,7 @@ export function useSensorRecorder(vehicle: string) {
         }
         (sensorIntervalRef as any).current = null;
       }
-      // Stop GPS
+
       if (locationSubRef.current) {
         try {
           locationSubRef.current.remove();
@@ -252,7 +244,28 @@ export function useSensorRecorder(vehicle: string) {
         }
         locationSubRef.current = null;
       }
-      // Stop network watcher
+
+      if (backgroundGpsEnabledRef.current) {
+        console.log('[useSensorRecorder] Stopping background GPS tracking...');
+        const backgroundGpsData = await backgroundGpsManager.stopBackgroundTracking();
+        if (backgroundGpsData.length > 0) {
+          const existingGps = gpsDataRef.current;
+          const mergedGps = [...existingGps];
+          for (const sample of backgroundGpsData) {
+            const isDuplicate = existingGps.some(
+              (existing) =>
+                Math.abs(existing.latitude - sample.latitude) < 0.0001 &&
+                Math.abs(existing.longitude - sample.longitude) < 0.0001
+            );
+            if (!isDuplicate) {
+              mergedGps.push(sample);
+            }
+          }
+          gpsDataRef.current = mergedGps;
+          console.log(`[useSensorRecorder] Merged ${backgroundGpsData.length} background GPS points, ${mergedGps.length} total`);
+        }
+      }
+
       if (networkUnsubRef.current) {
         try {
           networkUnsubRef.current();
@@ -285,12 +298,12 @@ export function useSensorRecorder(vehicle: string) {
         startedAt: Number(rideId.split('_')[0]),
         sensorsCount: sensorDataRef.current.length,
         gpsCount: gpsDataRef.current.length,
+        backgroundGpsEnabled: backgroundGpsEnabledRef.current,
         versions: {
           expo: (globalThis as any)?.Expo ? 'expo' : 'unknown',
         },
       };
 
-      // Save metadata.json
       const dir = FileSystem.documentDirectory + 'rides/' + rideId;
       await FileSystem.writeAsStringAsync(dir + '/metadata.json', JSON.stringify(metadata, null, 2));
 

@@ -19,7 +19,9 @@
       "infoPlist": {
         "ITSAppUsesNonExemptEncryption": false,
         "NSLocationWhenInUseUsageDescription": "This app collects anonymous GPS data only when your device is online to support a Citizen Science mobility study.",
-        "NSMotionUsageDescription": "This app collects anonymous accelerometer, gyroscope and magnetometer data during a ride for research purposes."
+        "NSLocationAlwaysAndWhenInUseUsageDescription": "This app collects anonymous GPS data continuously during your trip, even when the app is in the background, to support a Citizen Science mobility study.",
+        "NSMotionUsageDescription": "This app collects anonymous accelerometer, gyroscope and magnetometer data during a ride for research purposes.",
+        "UIBackgroundModes": ["location"]
       }
     },
     "android": {
@@ -32,6 +34,9 @@
       "permissions": [
         "ACCESS_FINE_LOCATION",
         "ACCESS_COARSE_LOCATION",
+        "ACCESS_BACKGROUND_LOCATION",
+        "FOREGROUND_SERVICE",
+        "FOREGROUND_SERVICE_LOCATION",
         "WRITE_EXTERNAL_STORAGE",
         "READ_EXTERNAL_STORAGE"
       ]
@@ -42,7 +47,15 @@
     },
     "plugins": [
       "expo-font",
-      "expo-router"
+      "expo-router",
+      [
+        "expo-location",
+        {
+          "locationAlwaysAndWhenInUsePermission": "Allow RUTA to use your location even in the background to track your trip route.",
+          "isAndroidBackgroundLocationEnabled": true,
+          "isAndroidForegroundServiceEnabled": true
+        }
+      ]
     ],
     "scheme": "ruta-mobile",
     "experiments": {

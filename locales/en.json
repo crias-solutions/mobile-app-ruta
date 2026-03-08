@@ -86,7 +86,9 @@
     "rideCompleteTitle": "Ride Complete!",
     "rideCompleteMessage": "Your ride data has been saved locally. Would you like to see a summary of your ride?",
     "viewStatistics": "View Statistics",
-    "startNewRide": "Start New Ride"
+    "startNewRide": "Start New Ride",
+    "backgroundGps": "Background GPS tracking",
+    "backgroundGpsDescription": "Keep tracking GPS when app is in background"
   },
   "feedback": {
     "title": "Ride Summary",

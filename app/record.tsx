@@ -1,6 +1,6 @@
 
 import { useEffect, useMemo, useRef, useState } from 'react';
-import { View, Text, Alert, Platform, ActivityIndicator, ScrollView } from 'react-native';
+import { View, Text, Alert, Platform, ActivityIndicator, ScrollView, Switch } from 'react-native';
 import { useLocalSearchParams, router } from 'expo-router';
 import Button from '../components/Button';
 import SwipeToConfirm from '../components/SwipeToConfirm';
@@ -9,6 +9,9 @@ import { useSensorRecorder } from '../hooks/useSensorRecorder';
 import { CRIASLogo } from './_layout';
 import * as Haptics from 'expo-haptics';
 import i18n from '../utils/i18n';
+import AsyncStorage from '@react-native-async-storage/async-storage';
+
+const BACKGROUND_GPS_KEY = 'background_gps_enabled';
 
 export default function RecordScreen() {
   const { vehicle } = useLocalSearchParams<{ vehicle?: string }>();
@@ -16,6 +19,33 @@ export default function RecordScreen() {
   const [finishing, setFinishing] = useState(false);
   const [showFeedbackOptions, setShowFeedbackOptions] = useState(false);
   const [completedRideId, setCompletedRideId] = useState<string | null>(null);
+  const [backgroundGpsEnabled, setBackgroundGpsEnabled] = useState(false);
+  const [loadingBackgroundGps, setLoadingBackgroundGps] = useState(true);
+
+  useEffect(() => {
+    (async () => {
+      try {
+        const saved = await AsyncStorage.getItem(BACKGROUND_GPS_KEY);
+        if (saved !== null) {
+          setBackgroundGpsEnabled(saved === 'true');
+        }
+      } catch (e) {
+        console.log('Error loading background GPS setting:', e);
+      } finally {
+        setLoadingBackgroundGps(false);
+      }
+    })();
+  }, []);
+
+  const handleBackgroundGpsChange = async (value: boolean) => {
+    setBackgroundGpsEnabled(value);
+    try {
+      await AsyncStorage.setItem(BACKGROUND_GPS_KEY, value ? 'true' : 'false');
+    } catch (e) {
+      console.log('Error saving background GPS setting:', e);
+    }
+  };
+
   const {
     isRecording,
     canRecord,
@@ -23,7 +53,7 @@ export default function RecordScreen() {
     startRecording,
     stopRecording,
     rideInfo,
-  } = useSensorRecorder(vehicle || 'unknown');
+  } = useSensorRecorder(vehicle || 'unknown', backgroundGpsEnabled);
 
   useEffect(() => {
     if (!vehicle) {
@@ -160,6 +190,22 @@ export default function RecordScreen() {
           <Text style={[commonStyles.text, { marginTop: 10 }]}>
             {i18n.t('record.description')}
           </Text>
+
+          {!loadingBackgroundGps && (
+            <View style={[commonStyles.card, { marginTop: 20, flexDirection: 'row', alignItems: 'center', justifyContent: 'space-between' }]}>
+              <View style={{ flex: 1, marginRight: 10 }}>
+                <Text style={commonStyles.subtitle}>{i18n.t('record.backgroundGps')}</Text>
+                <Text style={[commonStyles.text, { fontSize: 13 }]}>{i18n.t('record.backgroundGpsDescription')}</Text>
+              </View>
+              <Switch
+                value={backgroundGpsEnabled}
+                onValueChange={handleBackgroundGpsChange}
+                trackColor={{ false: '#3A3A5A', true: '#64B5F6' }}
+                thumbColor={backgroundGpsEnabled ? '#FFFFFF' : '#B0B0B0'}
+              />
+            </View>
+          )}
+
           <Button 
             text={i18n.t('common.start')} 
             onPress={handleStart} 
