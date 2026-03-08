@@ -59,7 +59,6 @@ export default function RecordScreen() {
     const ok = await startRecording();
     if (ok) {
       setStarted(true);
-      Alert.alert(i18n.t('common.info'), i18n.t('record.gpsOfflineNote'));
     } else {
       Alert.alert(
         i18n.t('record.failedToStart'), 
