@@ -10,14 +10,9 @@ type UploadArgs = {
   metadata: Record<string, any>;
 };
 
-/**
- * Uploads the ride CSVs and metadata to Supabase Postgres (ride_uploads).
- * Falls back with clear errors if offline or upload fails.
- */
 export async function uploadRide({ sensorCsvPath, gpsCsvPath, metadata }: UploadArgs) {
   console.log('uploadRide called', { sensorCsvPath, gpsCsvPath });
 
-  // Ensure network available
   try {
     const state = await Network.getNetworkStateAsync();
     const online = !!(state.isConnected && state.isInternetReachable !== false);
@@ -27,12 +22,9 @@ export async function uploadRide({ sensorCsvPath, gpsCsvPath, metadata }: Upload
     }
   } catch (e) {
     console.log('Network state error', e);
-    // Continue; fetch may still work
   }
 
-  // Read CSV content
   let sensorCsv = '';
-  let gpsCsv = '';
   try {
     sensorCsv = await FileSystem.readAsStringAsync(sensorCsvPath);
   } catch (e) {
@@ -40,6 +32,7 @@ export async function uploadRide({ sensorCsvPath, gpsCsvPath, metadata }: Upload
     Alert.alert('Read error', 'Could not read the sensor CSV file from local storage.');
     return;
   }
+  let gpsCsv = '';
   try {
     gpsCsv = await FileSystem.readAsStringAsync(gpsCsvPath);
   } catch (e) {
@@ -48,19 +41,22 @@ export async function uploadRide({ sensorCsvPath, gpsCsvPath, metadata }: Upload
     return;
   }
 
-  // Prepare row
-  const rideId: string = metadata?.rideId || extractRideIdFromPath(sensorCsvPath) || `${Date.now()}`;
-  const startedAt: number | undefined = metadata?.startedAt;
+  const { trimmedCsv: gpsCsvTrimmed, newCount: gpsCountTrimmed, newStartTime: gpsStartTime } = stripEndpointGpsPoints(gpsCsv);
+  const metadataUpdated: Record<string, any> = { ...metadata };
+  metadataUpdated.gpsCount = gpsCountTrimmed;
+  metadataUpdated.startedAt = gpsStartTime;
+
+  const rideId: string = metadataUpdated?.rideId || extractRideIdFromPath(sensorCsvPath) || `${Date.now()}`;
   const row = {
     ride_id: rideId,
-    vehicle: metadata?.vehicle || null,
-    platform: metadata?.platform || null,
-    started_at: startedAt ? new Date(startedAt).toISOString() : null,
-    sensors_count: Number.isFinite(metadata?.sensorsCount) ? Number(metadata.sensorsCount) : null,
-    gps_count: Number.isFinite(metadata?.gpsCount) ? Number(metadata.gpsCount) : null,
-    metadata: metadata || null,
+    vehicle: metadataUpdated?.vehicle || null,
+    platform: metadataUpdated?.platform || null,
+    started_at: gpsStartTime ? new Date(gpsStartTime).toISOString() : null,
+    sensors_count: Number.isFinite(metadataUpdated?.sensorsCount) ? Number(metadataUpdated.sensorsCount) : null,
+    gps_count: gpsCountTrimmed,
+    metadata: metadataUpdated || null,
     sensor_csv: sensorCsv,
-    gps_csv: gpsCsv,
+    gps_csv: gpsCsvTrimmed,
   };
 
   try {
@@ -77,7 +73,6 @@ export async function uploadRide({ sensorCsvPath, gpsCsvPath, metadata }: Upload
 
 function extractRideIdFromPath(p: string): string | null {
   try {
-    // /.../documentDirectory/rides/<rideId>/sensor.csv
     const idx = p.lastIndexOf('/rides/');
     if (idx === -1) return null;
     const rest = p.slice(idx + '/rides/'.length);
@@ -87,4 +82,32 @@ function extractRideIdFromPath(p: string): string | null {
   } catch {
     return null;
   }
+}
+
+type GpsTrimResult = {
+  trimmedCsv: string;
+  newCount: number;
+  newStartTime: number;
+};
+
+function stripEndpointGpsPoints(gpsCsv: string): GpsTrimResult {
+  const lines = gpsCsv.trim().split('\n');
+  if (lines.length === 0) {
+    return { trimmedCsv: gpsCsv, newCount: 0, newStartTime: 0 };
+  }
+  const header = lines[0];
+  const dataLines = lines.slice(1);
+
+  if (dataLines.length <= 2) {
+    const newCount = dataLines.length;
+    const newStartTime = dataLines.length > 0 ? Number(dataLines[0].split(',')[0]) || 0 : 0;
+    return { trimmedCsv: gpsCsv, newCount, newStartTime };
+  }
+
+  const trimmed = dataLines.slice(1, -1);
+  const newCount = trimmed.length;
+  const newStartTime = trimmed.length > 0 ? Number(trimmed[0].split(',')[0]) || 0 : 0;
+  const trimmedCsv = [header, ...trimmed].join('\n');
+
+  return { trimmedCsv, newCount, newStartTime };
 }
