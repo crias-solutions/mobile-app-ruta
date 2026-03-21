@@ -47,36 +47,42 @@ export async function requestNotificationPermissions(): Promise<boolean> {
   return true;
 }
 
-export async function scheduleNotification(schedule: NotificationSchedule): Promise<string | null> {
+export async function scheduleNotification(schedule: NotificationSchedule): Promise<string[] | null> {
   const hasPermission = await requestNotificationPermissions();
   if (!hasPermission) return null;
 
-  const dayNames = ['sunday', 'monday', 'tuesday', 'wednesday', 'thursday', 'friday', 'saturday'];
-  const enabledDays = schedule.days
-    .map((enabled, index) => (enabled ? dayNames[index] : null))
-    .filter(Boolean) as string[];
+  const enabledDayIndices = schedule.days
+    .map((enabled, index) => (enabled ? index : -1))
+    .filter((index) => index !== -1);
 
-  if (enabledDays.length === 0) return null;
+  if (enabledDayIndices.length === 0) return null;
+
+  const notificationIds: string[] = [];
 
   try {
-    const trigger: Notifications.NotificationTriggerInput = {
-      type: Notifications.SchedulableTriggerInputTypes.WEEKLY,
-      hour: schedule.hour,
-      minute: schedule.minute,
-      weekday: schedule.days.indexOf(true) + 1,
-    };
+    for (const dayIndex of enabledDayIndices) {
+      const trigger: Notifications.NotificationTriggerInput = {
+        type: Notifications.SchedulableTriggerInputTypes.WEEKLY,
+        hour: schedule.hour,
+        minute: schedule.minute,
+        weekday: dayIndex + 1,
+      };
 
-    const notificationId = await Notifications.scheduleNotificationAsync({
-      content: {
-        title: i18n.t('notifications.reminderTitle'),
-        body: i18n.t('notifications.reminderBody'),
-        sound: true,
-      },
-      trigger,
-    });
+      const notificationId = await Notifications.scheduleNotificationAsync({
+        content: {
+          title: i18n.t('notifications.reminderTitle'),
+          body: i18n.t('notifications.reminderBody'),
+          sound: true,
+          data: { scheduleId: schedule.id, dayIndex },
+        },
+        trigger,
+      });
 
-    console.log('Scheduled notification:', notificationId);
-    return notificationId;
+      notificationIds.push(notificationId);
+      console.log('Scheduled notification for day', dayIndex, ':', notificationId);
+    }
+
+    return notificationIds;
   } catch (e) {
     console.log('scheduleNotification error', e);
     return null;

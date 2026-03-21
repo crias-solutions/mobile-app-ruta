@@ -9,6 +9,8 @@
     "no": "No",
     "ok": "OK",
     "done": "Hecho",
+    "add": "Agregar",
+    "delete": "Eliminar",
     "start": "Iniciar",
     "stop": "Detener",
     "loading": "Cargando…",
