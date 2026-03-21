@@ -109,5 +109,40 @@
     },
     "localFeedbackTitle": "Retroalimentación local",
     "localFeedbackMessage": "¿Mostrar un resumen visual simple de tus datos recolectados en el dispositivo?"
+  },
+  "settings": {
+    "title": "Notificaciones",
+    "navTitle": "Configuración de Notificaciones",
+    "permissionRequired": "Se requieren permisos de notificación. Por favor, habilita las notificaciones en la configuración de tu dispositivo.",
+    "enableReminders": "Habilitar recordatorios",
+    "enableRemindersDescription": "Recibir recordatorios para iniciar la grabación",
+    "persistentNotification": "Notificación de grabación",
+    "persistentNotificationDescription": "Mostrar notificación mientras la grabación está activa",
+    "scheduledReminders": "Recordatorios Programados",
+    "noSchedules": "No hay recordatorios configurados.",
+    "addReminder": "Agregar Recordatorio",
+    "selectDays": "Seleccionar días",
+    "selectDaysError": "Selecciona al menos un día",
+    "selectDaysErrorMessage": "Por favor, selecciona al menos un día de la semana.",
+    "deleteSchedule": "Eliminar Recordatorio",
+    "deleteScheduleConfirm": "¿Estás seguro de que quieres eliminar este recordatorio?",
+    "days": {
+      "mon": "L",
+      "tue": "M",
+      "wed": "X",
+      "thu": "J",
+      "fri": "V",
+      "sat": "S",
+      "sun": "D"
+    }
+  },
+  "notifications": {
+    "channelReminders": "Recordatorios",
+    "channelRecording": "Estado de Grabación",
+    "reminderTitle": "¡Hora de recolectar datos!",
+    "reminderBody": "Abre RUTA para comenzar a grabar tu viaje.",
+    "recordingChannel": "Estado de Grabación",
+    "recordingTitle": "RUTA Grabando",
+    "recordingBody": "Grabando datos de sensores en progreso."
   }
 }

@@ -6,6 +6,7 @@ import Button from '../components/Button';
 import SwipeToConfirm from '../components/SwipeToConfirm';
 import { colors, commonStyles, buttonStyles } from '../styles/commonStyles';
 import { useSensorRecorder } from '../hooks/useSensorRecorder';
+import { usePersistentNotification } from '../hooks/usePersistentNotification';
 import { CRIASLogo } from './_layout';
 import * as Haptics from 'expo-haptics';
 import i18n from '../utils/i18n';
@@ -54,6 +55,8 @@ export default function RecordScreen() {
     stopRecording,
     rideInfo,
   } = useSensorRecorder(vehicle || 'unknown', backgroundGpsEnabled);
+
+  usePersistentNotification(isRecording);
 
   useEffect(() => {
     if (!vehicle) {

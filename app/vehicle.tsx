@@ -35,7 +35,18 @@ export default function VehicleScreen() {
       <View style={[commonStyles.content, { padding: 20 }]}>
         <View style={{ width: '100%', flexDirection: 'row', alignItems: 'center', justifyContent: 'space-between' }}>
           <Text style={commonStyles.title}>{i18n.t('vehicle.title')}</Text>
-          <Ionicons name="settings-outline" size={22} color={colors.text} onPress={() => setManageMode(m => !m)} />
+          <View style={{ flexDirection: 'row', gap: 16 }}>
+            <Ionicons name="notifications-outline" size={22} color={colors.text} onPress={() => router.push('/settings' as any)} />
+            <Ionicons name="settings-outline" size={22} color={colors.text} onPress={() => setManageMode(m => !m)} />
+          </View>
+        </View>
+
+        <View style={{ width: '100%', marginTop: 12 }}>
+          <Button
+            text={i18n.t('settings.navTitle')}
+            onPress={() => router.push('/settings' as any)}
+            style={buttonStyles.backButton}
+          />
         </View>
         
         {typeof freeMB === 'number' && freeMB < 50 && (

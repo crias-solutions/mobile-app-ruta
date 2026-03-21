@@ -109,5 +109,40 @@
     },
     "localFeedbackTitle": "Local feedback",
     "localFeedbackMessage": "Show a simple, visual-only summary from your collected data on-device?"
+  },
+  "settings": {
+    "title": "Notifications",
+    "navTitle": "Notification Settings",
+    "permissionRequired": "Notification permissions required. Please enable notifications in your device settings.",
+    "enableReminders": "Enable reminders",
+    "enableRemindersDescription": "Receive reminders to start recording",
+    "persistentNotification": "Recording notification",
+    "persistentNotificationDescription": "Show notification while recording is active",
+    "scheduledReminders": "Scheduled Reminders",
+    "noSchedules": "No reminders configured yet.",
+    "addReminder": "Add Reminder",
+    "selectDays": "Select days",
+    "selectDaysError": "Select at least one day",
+    "selectDaysErrorMessage": "Please select at least one day of the week.",
+    "deleteSchedule": "Delete Reminder",
+    "deleteScheduleConfirm": "Are you sure you want to delete this reminder?",
+    "days": {
+      "mon": "M",
+      "tue": "T",
+      "wed": "W",
+      "thu": "T",
+      "fri": "F",
+      "sat": "S",
+      "sun": "S"
+    }
+  },
+  "notifications": {
+    "channelReminders": "Reminders",
+    "channelRecording": "Recording Status",
+    "reminderTitle": "Time to collect data!",
+    "reminderBody": "Open RUTA to start recording your ride.",
+    "recordingChannel": "Recording Status",
+    "recordingTitle": "RUTA Recording",
+    "recordingBody": "Recording sensor data in progress."
   }
 }
