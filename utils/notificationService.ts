@@ -59,13 +59,15 @@ export async function scheduleNotification(schedule: NotificationSchedule): Prom
 
   const notificationIds: string[] = [];
 
+  const DAY_INDEX_TO_EXPO_WEEKDAY = [2, 3, 4, 5, 6, 7, 1];
+
   try {
     for (const dayIndex of enabledDayIndices) {
       const trigger: Notifications.NotificationTriggerInput = {
         type: Notifications.SchedulableTriggerInputTypes.WEEKLY,
         hour: schedule.hour,
         minute: schedule.minute,
-        weekday: dayIndex + 1,
+        weekday: DAY_INDEX_TO_EXPO_WEEKDAY[dayIndex],
       };
 
       const notificationId = await Notifications.scheduleNotificationAsync({

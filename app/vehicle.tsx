@@ -35,7 +35,10 @@ export default function VehicleScreen() {
       <View style={[commonStyles.content, { padding: 20 }]}>
         <View style={{ width: '100%', flexDirection: 'row', alignItems: 'center', justifyContent: 'space-between' }}>
           <Text style={commonStyles.title}>{i18n.t('vehicle.title')}</Text>
-          <Ionicons name="settings-outline" size={22} color={colors.text} onPress={() => setManageMode(m => !m)} />
+          <View style={{ flexDirection: 'row', gap: 16 }}>
+            <Ionicons name="notifications-outline" size={22} color={colors.text} onPress={() => router.push('/settings' as any)} />
+            <Ionicons name="settings-outline" size={22} color={colors.text} onPress={() => setManageMode(m => !m)} />
+          </View>
         </View>
         
         {typeof freeMB === 'number' && freeMB < 50 && (
@@ -66,7 +69,7 @@ export default function VehicleScreen() {
                 />
               ))}
             </View>
-            {lastSelected && (
+            {lastSelected ? (
               <View style={{ width: '100%', marginTop: 20 }}>
                 <Button
                   text={i18n.t('vehicle.quickStart', { vehicle: getVehicleLabel(lastSelected) })}
@@ -74,7 +77,18 @@ export default function VehicleScreen() {
                   style={buttonStyles.instructionsButton}
                 />
               </View>
-            )}
+            ) : enabledVehicles.length > 0 ? (
+              <View style={{ width: '100%', marginTop: 20 }}>
+                <Button
+                  text={i18n.t('vehicle.startRecording', { vehicle: getVehicleLabel(enabledVehicles[0].id) })}
+                  onPress={() => {
+                    setLastSelected(enabledVehicles[0].id);
+                    router.push({ pathname: '/record', params: { vehicle: enabledVehicles[0].id } });
+                  }}
+                  style={buttonStyles.instructionsButton}
+                />
+              </View>
+            ) : null}
             <View style={{ width: '100%', marginTop: 10 }}>
               <Button 
                 text={i18n.t('common.back')}

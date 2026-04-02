@@ -46,7 +46,8 @@
     "title": "Selecciona tu vehículo",
     "description": "Elige un modo de transporte a continuación. Puedes editar la lista tocando el ícono de configuración.",
     "lowStorage": "Almacenamiento bajo: {freeMB} MB disponibles. La grabación puede detenerse si se agota el almacenamiento.",
-    "quickStart": "Inicio rápido con {vehicle}",
+    "quickStart": "Inicio rápido",
+    "startRecording": "Iniciar grabación",
     "manageTitle": "Administrar lista de vehículos",
     "manageDescription": "Activa o desactiva qué tipos de vehículos son visibles en la pantalla de selección.",
     "vehicles": {

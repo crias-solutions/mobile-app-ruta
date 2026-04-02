@@ -60,7 +60,7 @@
       [
         "expo-notifications",
         {
-          "icon": "./assets/images/natively-dark.png",
+          "icon": "./assets/images/03c3eb6d-4b62-45d1-8c7d-df8b589efe1e.png",
           "color": "#4A5A7A",
           "sounds": []
         }

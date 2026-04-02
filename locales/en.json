@@ -46,7 +46,8 @@
     "title": "Select your vehicle",
     "description": "Choose a mode of transport below. You can edit the list by tapping the settings icon.",
     "lowStorage": "Low storage: {freeMB} MB available. Recording may stop if storage runs out.",
-    "quickStart": "Quick start with {vehicle}",
+    "quickStart": "Quick start",
+    "startRecording": "Start recording",
     "manageTitle": "Manage vehicle list",
     "manageDescription": "Toggle which vehicle types are visible on the selection screen.",
     "vehicles": {

@@ -264,12 +264,6 @@ export default function RecordScreen() {
         <Text style={commonStyles.title}>{i18n.t('record.recordingTitle')}</Text>
         <Text style={commonStyles.text}>{i18n.t('record.recordingDescription')}</Text>
         <ActivityIndicator style={{ marginVertical: 20 }} color={colors.accent} />
-        <Button 
-          text={i18n.t('common.stop')} 
-          onPress={confirmStop} 
-          style={[buttonStyles.instructionsButton, { backgroundColor: '#8e24aa' }]} 
-        />
-        <View style={{ height: 24 }} />
         <SwipeToConfirm
           text={i18n.t('record.swipeToStop')}
           trackColor="#1e2a44"

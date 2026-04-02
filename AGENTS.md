@@ -192,9 +192,10 @@ locales/          # i18n JSON files
 
 ## Important Notes
 
-1. **No tests** — Add Jest/Vitest before adding test files
+1. **No tests** — Add Jest/Vitest before creating test files
 2. **Background GPS** — Android requires `<uses-permission android:name="android.permission.ACCESS_BACKGROUND_LOCATION"/>` in manifest
 3. **i18n** — Uses i18n-js with JSON locale files in `locales/`
 4. **Platform checks** — `Platform.OS === 'web'` or `Platform.OS === 'android'`
 5. **No component libraries** — custom UI using React Native primitives only
 6. **SKILLS/** — Contains specialized guidelines (e.g., documentation-writing.md)
+7. **Next Release** — Fix calculated values shown on feedback/statistics screen after stopping a recording (values may be incorrect/zero)
