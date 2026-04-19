@@ -114,7 +114,9 @@
       "metersPerSecondSquared": " m/s²"
     },
     "localFeedbackTitle": "Local feedback",
-    "localFeedbackMessage": "Show a simple, visual-only summary from your collected data on-device?"
+    "localFeedbackMessage": "Show a simple, visual-only summary from your collected data on-device?",
+    "uploadSkipped": "Upload skipped",
+    "uploadSkippedMessage": "Your trip is too short to be uploaded securely. Local feedback is still available."
   },
   "settings": {
     "title": "Notifications",

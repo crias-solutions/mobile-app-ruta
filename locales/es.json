@@ -114,7 +114,9 @@
       "metersPerSecondSquared": " m/s²"
     },
     "localFeedbackTitle": "Retroalimentación local",
-    "localFeedbackMessage": "¿Mostrar un resumen visual simple de tus datos recolectados en el dispositivo?"
+    "localFeedbackMessage": "¿Mostrar un resumen visual simple de tus datos recolectados en el dispositivo?",
+    "uploadSkipped": "Subida omitida",
+    "uploadSkippedMessage": "Tu viaje es muy corto para ser subido de forma segura. El resumen local aún está disponible."
   },
   "settings": {
     "title": "Notificaciones",

@@ -2,7 +2,7 @@
   "expo": {
     "name": "RUTA Mobile",
     "slug": "ruta-mobile",
-    "version": "2.0.0",
+    "version": "2.1.1",
     "orientation": "portrait",
     "icon": "./assets/images/natively-dark.png",
     "userInterfaceStyle": "dark",
@@ -15,7 +15,7 @@
     "ios": {
       "supportsTablet": true,
       "bundleIdentifier": "com.anonymous.Natively",
-      "icon": "./assets/images/natively-dark.png",
+      "icon": "./assets/images/Logo-RUTA_Monochrom-74x74-512x512.png",
       "infoPlist": {
         "ITSAppUsesNonExemptEncryption": false,
         "NSLocationWhenInUseUsageDescription": "This app collects anonymous GPS data only when your device is online to support a Citizen Science mobility study.",
@@ -60,9 +60,12 @@
       [
         "expo-notifications",
         {
-          "icon": "./assets/images/03c3eb6d-4b62-45d1-8c7d-df8b589efe1e.png",
-          "color": "#4A5A7A",
-          "sounds": []
+          "icon": "./assets/images/Logo-RUTA_Monochrom-74x74-512x512.png",
+          "color": "#000000",
+          "sounds": [],
+          "ios": {
+            "icon": "./assets/images/Logo-RUTA_Monochrom-74x74-512x512.png"
+          }
         }
       ]
     ],

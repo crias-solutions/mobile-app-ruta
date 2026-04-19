@@ -23,7 +23,7 @@ export function usePersistentNotification(isRecording: boolean) {
           name: i18n.t('notifications.recordingChannel'),
           importance: Notifications.AndroidImportance.LOW,
           vibrationPattern: [0],
-          lightColor: '#4A5A7A',
+          lightColor: '#000000',
           lockscreenVisibility: Notifications.AndroidNotificationVisibility.PUBLIC,
           bypassDnd: false,
         });

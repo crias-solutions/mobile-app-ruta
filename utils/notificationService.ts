@@ -40,7 +40,7 @@ export async function requestNotificationPermissions(): Promise<boolean> {
       name: i18n.t('notifications.channelReminders'),
       importance: Notifications.AndroidImportance.HIGH,
       vibrationPattern: [0, 250, 250, 250],
-      lightColor: '#4A5A7A',
+      lightColor: '#000000',
     });
   }
 
