@@ -1,67 +1,36 @@
-
 import { View, Text, ScrollView, Platform } from 'react-native';
 import * as FileSystem from 'expo-file-system/legacy';
 import { useLocalSearchParams, router } from 'expo-router';
 import { commonStyles, colors, buttonStyles } from '../styles/commonStyles';
-import { useEffect, useMemo, useState } from 'react';
+import { useEffect, useState } from 'react';
 import { CRIASLogo } from './_layout';
 import Button from '../components/Button';
 import i18n from '../utils/i18n';
+import { parseGpsCsv, computeTripSummary, formatDuration, TripSummary } from '../utils/tripSummary';
 
-interface Stat {
-  label: string;
-  value: number;
-  unit?: string;
-}
-
-function parseAccelMagnitude(csv: string): number[] {
-  const lines = csv.split('\n').slice(1); // Skip header
-  return lines
-    .filter(line => line.trim())
-    .map(line => {
-      const parts = line.split(',');
-      // Expected: timestamp_ms,sensor,x,y,z
-      const sensorType = parts[1];
-      if (sensorType !== 'accelerometer') return NaN;
-      const ax = Number(parts[2]);
-      const ay = Number(parts[3]);
-      const az = Number(parts[4]);
-      return Math.sqrt(ax * ax + ay * ay + az * az);
-    })
-    .filter(n => !Number.isNaN(n));
-}
-
-function StatBar({ label, value, max, unit }: { label: string; value: number; max?: number; unit?: string }) {
-  const percentage = max ? Math.min((value / max) * 100, 100) : 0;
-  
+function StatRow({ label, value }: { label: string; value: string }) {
   return (
-    <View style={{ marginVertical: 8 }}>
-      <View style={{ flexDirection: 'row', justifyContent: 'space-between', marginBottom: 4 }}>
-        <Text style={[commonStyles.text, { fontSize: 14 }]}>{label}</Text>
-        <Text style={[commonStyles.text, { fontSize: 14, fontWeight: '600' }]}>
-          {value.toFixed(1)}{unit || ''}
-        </Text>
-      </View>
-      <View style={{ 
-        height: 8, 
-        backgroundColor: colors.backgroundAlt, 
-        borderRadius: 4,
-        overflow: 'hidden'
-      }}>
-        <View style={{ 
-          height: '100%', 
-          width: `${percentage}%`, 
-          backgroundColor: colors.accent,
-          borderRadius: 4
-        }} />
-      </View>
+    <View style={{ flexDirection: 'row', justifyContent: 'space-between', paddingVertical: 6 }}>
+      <Text style={[commonStyles.text, { fontSize: 14, flex: 1 }]}>{label}</Text>
+      <Text style={[commonStyles.text, { fontSize: 14, fontWeight: '600', textAlign: 'right' }]}>
+        {value}
+      </Text>
     </View>
+  );
+}
+
+function SectionTitle({ title }: { title: string }) {
+  return (
+    <Text style={[commonStyles.subtitle, { fontSize: 16, marginTop: 16, marginBottom: 4 }]}>
+      {title}
+    </Text>
   );
 }
 
 export default function FeedbackScreen() {
   const { rideId } = useLocalSearchParams<{ rideId?: string }>();
-  const [stats, setStats] = useState<Stat[]>([]);
+  const [tripSummary, setTripSummary] = useState<TripSummary | null>(null);
+  const [hasGpsData, setHasGpsData] = useState(false);
   const [loading, setLoading] = useState(true);
 
   useEffect(() => {
@@ -76,58 +45,38 @@ export default function FeedbackScreen() {
       try {
         setLoading(true);
         console.log('Loading stats for rideId:', rideId);
-        
+
         const sensorPath = `${FileSystem.documentDirectory}rides/${rideId}/sensor.csv`;
+        const gpsPath = `${FileSystem.documentDirectory}rides/${rideId}/gps.csv`;
+
         const sensorExists = await FileSystem.getInfoAsync(sensorPath);
-        
-        console.log('Sensor file exists:', sensorExists.exists, 'at path:', sensorPath);
-        
-        if (sensorExists.exists) {
-          const csv = await FileSystem.readAsStringAsync(sensorPath);
-          const magnitudes = parseAccelMagnitude(csv);
-          
-          console.log('Parsed magnitudes count:', magnitudes.length);
-          
-          if (magnitudes.length > 0) {
-            const maxMag = Math.max(...magnitudes);
-            const avgMag = magnitudes.reduce((a, b) => a + b, 0) / magnitudes.length;
-            const duration = magnitudes.length / 10; // Assuming 10Hz sampling
-            
-            const newStats = [
-              { 
-                label: i18n.t('feedback.stats.duration'), 
-                value: duration, 
-                unit: i18n.t('feedback.units.seconds') 
-              },
-              { 
-                label: i18n.t('feedback.stats.dataPoints'), 
-                value: magnitudes.length 
-              },
-              { 
-                label: i18n.t('feedback.stats.avgAcceleration'), 
-                value: avgMag, 
-                unit: i18n.t('feedback.units.metersPerSecondSquared') 
-              },
-              { 
-                label: i18n.t('feedback.stats.maxAcceleration'), 
-                value: maxMag, 
-                unit: i18n.t('feedback.units.metersPerSecondSquared') 
-              },
-            ];
-            
-            console.log('Setting stats:', newStats);
-            setStats(newStats);
-          } else {
-            console.log('No valid magnitude data found');
-            setStats([]);
+        const gpsExists = await FileSystem.getInfoAsync(gpsPath);
+
+        console.log('Sensor file exists:', sensorExists.exists);
+        console.log('GPS file exists:', gpsExists.exists);
+
+        let summary: TripSummary | null = null;
+        let hasGps = false;
+
+        if (gpsExists.exists) {
+          const gpsCsv = await FileSystem.readAsStringAsync(gpsPath);
+          const gpsPoints = parseGpsCsv(gpsCsv);
+
+          console.log('Parsed GPS points:', gpsPoints.length);
+
+          if (gpsPoints.length > 0) {
+            hasGps = true;
+            summary = computeTripSummary(gpsPoints);
+            console.log('Trip summary computed:', summary);
           }
-        } else {
-          console.log('Sensor file does not exist');
-          setStats([]);
         }
+
+        setHasGpsData(hasGps);
+        setTripSummary(summary);
       } catch (error) {
         console.log('Error loading stats:', error);
-        setStats([]);
+        setTripSummary(null);
+        setHasGpsData(false);
       } finally {
         setLoading(false);
       }
@@ -136,22 +85,12 @@ export default function FeedbackScreen() {
     loadStats();
   }, [rideId]);
 
-  const maxValues = useMemo(() => {
-    return {
-      duration: 3600, // 1 hour max for visualization
-      dataPoints: 36000, // 1 hour at 10Hz
-      avgAccel: 20, // reasonable max for avg
-      maxAccel: 50, // reasonable max for peak
-    };
-  }, []);
-
   const handleStartNewRide = () => {
     console.log('Start New Ride button pressed - navigating to vehicle screen');
     try {
       router.push('/vehicle');
     } catch (error) {
       console.log('Navigation error:', error);
-      // Fallback navigation
       router.replace('/vehicle');
     }
   };
@@ -165,27 +104,48 @@ export default function FeedbackScreen() {
         </Text>
 
         <View style={commonStyles.card}>
-          <Text style={commonStyles.subtitle}>{i18n.t('feedback.statisticsTitle')}</Text>
           {loading ? (
             <Text style={[commonStyles.text, { textAlign: 'center', padding: 20 }]}>
               {i18n.t('feedback.loadingStats')}
             </Text>
-          ) : stats.length > 0 ? (
-            stats.map((stat, index) => (
-              <StatBar
-                key={index}
-                label={stat.label}
-                value={stat.value}
-                unit={stat.unit}
-                max={
-                  stat.label.includes(i18n.t('feedback.stats.duration').split(' ')[0]) ? maxValues.duration :
-                  stat.label.includes(i18n.t('feedback.stats.dataPoints').split(' ')[0]) ? maxValues.dataPoints :
-                  stat.label.includes('Avg') || stat.label.includes('Promedio') ? maxValues.avgAccel :
-                  stat.label.includes('Max') || stat.label.includes('Máxima') ? maxValues.maxAccel :
-                  undefined
-                }
+          ) : tripSummary ? (
+            <>
+              <SectionTitle title="Trip Summary" />
+              <StatRow
+                label={i18n.t('feedback.stats.distance')}
+                value={`${tripSummary.distance.toFixed(2)} km`}
               />
-            ))
+              <StatRow
+                label={i18n.t('feedback.stats.duration')}
+                value={formatDuration(tripSummary.duration)}
+              />
+
+              <SectionTitle title="Speed" />
+              <StatRow
+                label={i18n.t('feedback.stats.averageSpeed')}
+                value={`${tripSummary.averageSpeed.toFixed(1)} km/h`}
+              />
+              <StatRow
+                label={i18n.t('feedback.stats.maxSpeed')}
+                value={`${tripSummary.maxSpeed.toFixed(1)} km/h`}
+              />
+
+              <SectionTitle title="Motion" />
+              <StatRow
+                label={i18n.t('feedback.stats.maxAcceleration')}
+                value={`${tripSummary.maxAcceleration.toFixed(2)} m/s²`}
+              />
+
+              <SectionTitle title="Stops" />
+              <StatRow
+                label={i18n.t('feedback.stats.numStops')}
+                value={String(tripSummary.stops)}
+              />
+              <StatRow
+                label={i18n.t('feedback.stats.stoppedTime')}
+                value={`${formatDuration(tripSummary.stoppedTime)} (${tripSummary.stoppedTimePercent.toFixed(1)}%)`}
+              />
+            </>
           ) : (
             <Text style={[commonStyles.text, { textAlign: 'center', padding: 20, opacity: 0.7 }]}>
               {i18n.t('feedback.noData')}
@@ -205,7 +165,6 @@ export default function FeedbackScreen() {
           />
         </View>
 
-        {/* CRIAS Solutions Logo at bottom of page content */}
         <View style={{ marginTop: 30 }}>
           <CRIASLogo />
         </View>

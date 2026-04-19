@@ -101,10 +101,13 @@
     "noData": "No hay datos de viaje disponibles para análisis.",
     "disclaimer": "Este análisis se realiza completamente en tu dispositivo. No se envían datos a ningún lugar para este resumen.",
     "stats": {
-      "duration": "Duración del Viaje",
-      "dataPoints": "Puntos de Datos",
-      "avgAcceleration": "Aceleración Promedio",
-      "maxAcceleration": "Aceleración Máxima"
+      "distance": "Distancia",
+      "duration": "Duración",
+      "averageSpeed": "Velocidad Promedio",
+      "maxSpeed": "Velocidad Máxima",
+      "maxAcceleration": "Aceleración Máxima",
+      "numStops": "Número de Paradas",
+      "stoppedTime": "Tiempo Detenido"
     },
     "units": {
       "seconds": " seg",

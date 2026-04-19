@@ -101,10 +101,13 @@
     "noData": "No ride data available for analysis.",
     "disclaimer": "This analysis is performed entirely on your device. No data is sent anywhere for this summary.",
     "stats": {
-      "duration": "Ride Duration",
-      "dataPoints": "Data Points",
-      "avgAcceleration": "Avg Acceleration",
-      "maxAcceleration": "Max Acceleration"
+      "distance": "Distance",
+      "duration": "Duration",
+      "averageSpeed": "Average Speed",
+      "maxSpeed": "Maximum Speed",
+      "maxAcceleration": "Max Acceleration",
+      "numStops": "Number of Stops",
+      "stoppedTime": "Stopped Time"
     },
     "units": {
       "seconds": " sec",
