@@ -10,6 +10,7 @@ import { usePersistentNotification } from '../hooks/usePersistentNotification';
 import { useInactivityDetector } from '../hooks/useInactivityDetector';
 import { CRIASLogo } from './_layout';
 import * as Haptics from 'expo-haptics';
+import * as FileSystem from 'expo-file-system/legacy';
 import i18n from '../utils/i18n';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 
@@ -88,11 +89,25 @@ export default function RecordScreen() {
       [
         { text: i18n.t('common.cancel'), style: 'cancel' },
         {
-          text: i18n.t('record.saveAndLeave'),
+          text: i18n.t('record.uploadAndLeave'),
           style: 'destructive',
           onPress: async () => {
             setFinishing(true);
-            await stopRecording();
+            const result = await stopRecording();
+            if (result) {
+              const { uploadRide } = await import('../services/uploader');
+              const dir = FileSystem.documentDirectory + 'rides/' + result.rideId;
+              try {
+                await uploadRide({ sensorCsvPath: result.sensorCsvPath, gpsCsvPath: result.gpsCsvPath, metadata: result.metadata });
+              } catch (e: any) {
+                Alert.alert(i18n.t('record.uploadFailed'), i18n.t('record.uploadFailedMessage'));
+              }
+              try {
+                await FileSystem.deleteAsync(dir, { idempotent: true });
+              } catch (e) {
+                console.log('Error deleting ride directory:', e);
+              }
+            }
             setFinishing(false);
             router.back();
           },

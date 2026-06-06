@@ -93,8 +93,9 @@
     "backgroundGps": "GPS en segundo plano",
     "backgroundGpsDescription": "Mantener rastreo GPS cuando la app está en segundo plano",
     "leaveConfirmTitle": "Grabación en progreso",
-    "leaveConfirmMessage": "Tienes una grabación activa. ¿Guardar tus datos antes de salir?",
-    "saveAndLeave": "Guardar y Salir"
+    "leaveConfirmMessage": "Tienes una grabación activa. ¿Subir tus datos antes de salir?",
+    "uploadAndLeave": "Subir y Salir",
+    "uploadFailedMessage": "No se pudo subir los datos del viaje."
   },
   "feedback": {
     "title": "Resumen del Viaje",
