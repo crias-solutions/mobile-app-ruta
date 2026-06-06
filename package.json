@@ -1,6 +1,6 @@
 {
   "name": "Natively",
-  "version": "2.1.1",
+  "version": "2.2.1",
   "main": "index.ts",
   "scripts": {
     "dev": "EXPO_NO_TELEMETRY=1 expo start --tunnel",
@@ -35,7 +35,6 @@
     "expo-file-system": "~19.0.21",
     "expo-font": "~14.0.10",
     "expo-haptics": "~15.0.8",
-    "expo-image-picker": "~17.0.10",
     "expo-linear-gradient": "~15.0.8",
     "expo-linking": "~8.0.11",
     "expo-localization": "^17.0.8",

@@ -74,7 +74,7 @@ export async function scheduleNotification(schedule: NotificationSchedule): Prom
         content: {
           title: i18n.t('notifications.reminderTitle'),
           body: i18n.t('notifications.reminderBody'),
-          sound: true,
+          sound: 'default',
           data: { scheduleId: schedule.id, dayIndex },
         },
         trigger,

@@ -58,7 +58,7 @@ export function parseGpsCsv(csv: string): GpsPoint[] {
 }
 
 export function computeTripSummary(gpsPoints: GpsPoint[]): TripSummary {
-  const STOP_THRESHOLD_MS = 0.5;
+  const STOP_SPEED_M_PER_S = 0.1;
   const points = gpsPoints
     .filter(p => p.t > 0)
     .sort((a, b) => a.t - b.t);
@@ -104,7 +104,7 @@ export function computeTripSummary(gpsPoints: GpsPoint[]): TripSummary {
         maxAcceleration = acceleration;
       }
 
-      if (speedMs < STOP_THRESHOLD_MS) {
+      if (speedMs < STOP_SPEED_M_PER_S) {
         stoppedTime += timeDiff;
         if (wasMoving) {
           stops++;

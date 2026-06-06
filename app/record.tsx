@@ -1,12 +1,13 @@
 
 import { useEffect, useMemo, useRef, useState } from 'react';
-import { View, Text, Alert, Platform, ActivityIndicator, ScrollView, Switch } from 'react-native';
+import { View, Text, Alert, Platform, ActivityIndicator, ScrollView, Switch, BackHandler } from 'react-native';
 import { useLocalSearchParams, router } from 'expo-router';
 import Button from '../components/Button';
 import SwipeToConfirm from '../components/SwipeToConfirm';
 import { colors, commonStyles, buttonStyles } from '../styles/commonStyles';
 import { useSensorRecorder } from '../hooks/useSensorRecorder';
 import { usePersistentNotification } from '../hooks/usePersistentNotification';
+import { useInactivityDetector } from '../hooks/useInactivityDetector';
 import { CRIASLogo } from './_layout';
 import * as Haptics from 'expo-haptics';
 import i18n from '../utils/i18n';
@@ -54,9 +55,11 @@ export default function RecordScreen() {
     startRecording,
     stopRecording,
     rideInfo,
+    latestSpeedRef,
   } = useSensorRecorder(vehicle || 'unknown', backgroundGpsEnabled);
 
   usePersistentNotification(isRecording);
+  useInactivityDetector(isRecording, latestSpeedRef);
 
   useEffect(() => {
     if (!vehicle) {
@@ -77,6 +80,37 @@ export default function RecordScreen() {
   const getVehicleLabel = (vehicleId: string) => {
     return i18n.t(`vehicle.vehicles.${vehicleId}`);
   };
+
+  const confirmLeave = () => {
+    Alert.alert(
+      i18n.t('record.leaveConfirmTitle'),
+      i18n.t('record.leaveConfirmMessage'),
+      [
+        { text: i18n.t('common.cancel'), style: 'cancel' },
+        {
+          text: i18n.t('record.saveAndLeave'),
+          style: 'destructive',
+          onPress: async () => {
+            setFinishing(true);
+            await stopRecording();
+            setFinishing(false);
+            router.back();
+          },
+        },
+      ]
+    );
+  };
+
+  useEffect(() => {
+    if (isRecording) {
+      const backHandler = BackHandler.addEventListener('hardwareBackPress', () => {
+        confirmLeave();
+        return true;
+      });
+      return () => backHandler.remove();
+    }
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [isRecording]);
 
   const handleStart = async () => {
     if (!canRecord) {
@@ -216,7 +250,7 @@ export default function RecordScreen() {
           />
           <Button 
             text={i18n.t('common.back')} 
-            onPress={() => router.back()} 
+            onPress={isRecording ? confirmLeave : () => router.back()} 
             style={[buttonStyles.backButton, { marginTop: 10 }]} 
           />
           

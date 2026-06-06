@@ -91,7 +91,10 @@
     "viewStatistics": "View Statistics",
     "startNewRide": "Start New Ride",
     "backgroundGps": "Background GPS tracking",
-    "backgroundGpsDescription": "Keep tracking GPS when app is in background"
+    "backgroundGpsDescription": "Keep tracking GPS when app is in background",
+    "leaveConfirmTitle": "Recording in progress",
+    "leaveConfirmMessage": "You have an active recording. Save your data before leaving?",
+    "saveAndLeave": "Save & Leave"
   },
   "feedback": {
     "title": "Ride Summary",

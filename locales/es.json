@@ -91,7 +91,10 @@
     "viewStatistics": "Ver Estadísticas",
     "startNewRide": "Iniciar Nuevo Viaje",
     "backgroundGps": "GPS en segundo plano",
-    "backgroundGpsDescription": "Mantener rastreo GPS cuando la app está en segundo plano"
+    "backgroundGpsDescription": "Mantener rastreo GPS cuando la app está en segundo plano",
+    "leaveConfirmTitle": "Grabación en progreso",
+    "leaveConfirmMessage": "Tienes una grabación activa. ¿Guardar tus datos antes de salir?",
+    "saveAndLeave": "Guardar y Salir"
   },
   "feedback": {
     "title": "Resumen del Viaje",

@@ -38,6 +38,8 @@ export function useSensorRecorder(vehicle: string, enableBackgroundGps: boolean 
   const gpsCsvPathRef = useRef<string>('');
   const flushTimerRef = useRef<NodeJS.Timer | null>(null);
   const backgroundGpsEnabledRef = useRef<boolean>(false);
+  const latestSpeedRef = useRef<number>(0);
+  const isRecordingRef = useRef(false);
 
   useEffect(() => {
     (async () => {
@@ -57,7 +59,11 @@ export function useSensorRecorder(vehicle: string, enableBackgroundGps: boolean 
     })();
 
     return () => {
-      stopAll();
+      if (isRecordingRef.current) {
+        stopRecording();
+      } else {
+        stopAll();
+      }
     };
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
@@ -160,6 +166,7 @@ export function useSensorRecorder(vehicle: string, enableBackgroundGps: boolean 
                 altitude: c.altitude,
                 speed: c.speed,
               });
+              latestSpeedRef.current = c.speed ?? 0;
             }
           );
 
@@ -206,6 +213,7 @@ export function useSensorRecorder(vehicle: string, enableBackgroundGps: boolean 
       flushTimerRef.current = setInterval(writeCsvSnapshot, 5000) as any;
 
       setIsRecording(true);
+      isRecordingRef.current = true;
       return true;
     } catch (e: any) {
       console.log('startRecording error', e);
@@ -290,6 +298,7 @@ export function useSensorRecorder(vehicle: string, enableBackgroundGps: boolean 
 
       const rideId = rideIdRef.current!;
       setIsRecording(false);
+      isRecordingRef.current = false;
 
       const metadata = {
         rideId,
@@ -328,5 +337,6 @@ export function useSensorRecorder(vehicle: string, enableBackgroundGps: boolean 
     startRecording,
     stopRecording,
     rideInfo,
+    latestSpeedRef,
   };
 }
